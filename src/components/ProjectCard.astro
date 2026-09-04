@@ -1,0 +1,93 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  hook: string;
+  timeline: string;
+  tags?: string[];
+  accent?: string;
+  cover?: string;
+  coverAlt?: string;
+}
+const { href, title, hook, timeline, tags = [], accent, cover, coverAlt } = Astro.props;
+---
+
+<a class="card" href={href} style={accent ? `--accent: ${accent};` : undefined}>
+  {
+    cover ? (
+      <div class="card__media card__media--photo">
+        <img src={cover} alt={coverAlt ?? title} loading="lazy" decoding="async" />
+      </div>
+    ) : (
+      <div class="card__media" aria-hidden="true">
+        <span>[Project image]</span>
+      </div>
+    )
+  }
+  <div class="card__body">
+    <p class="card__timeline">{timeline}</p>
+    <h3 class="card__title">{title}</h3>
+    <p class="card__hook">{hook}</p>
+    {
+      tags.length > 0 && (
+        <ul class="card__tags">
+          {tags.slice(0, 4).map((t) => (
+            <li class="tag">{t}</li>
+          ))}
+        </ul>
+      )
+    }
+    <span class="card__more">View case study →</span>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--shadow);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-strong);
+  }
+  .card__media {
+    aspect-ratio: 16 / 10;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    border-bottom: 1px dashed var(--border-strong);
+    background:
+      radial-gradient(120% 120% at 0% 0%, var(--accent-soft), transparent 60%),
+      var(--surface);
+    color: var(--text-faint);
+    font-size: var(--fs-caption);
+  }
+  /* A real cover photo replaces the placeholder's padding/dashed border with
+     a flush, edge-to-edge image — the border-bottom stays as the seam into
+     card__body. */
+  .card__media--photo {
+    padding: 0;
+    border-bottom-style: solid;
+  }
+  .card__media--photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card__body { padding: 1.3rem 1.4rem 1.5rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
+  .card__timeline { font-size: var(--fs-caption); color: var(--text-faint); font-weight: 300; letter-spacing: 0.02em; }
+  .card__title { font-size: var(--fs-h3); }
+  .card__hook { color: var(--text-soft); }
+  .card__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin-top: 0.15rem; }
+  .card__more { margin-top: auto; padding-top: 0.6rem; font-size: var(--fs-caption); font-weight: 600; color: var(--accent); }
+</style>

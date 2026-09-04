@@ -1,0 +1,172 @@
+---
+title: BHCHP Application Portal
+hook: Turning a scattered, manual volunteer intake into one portal, so a homeless-health nonprofit can spend its time on care, not paperwork.
+summary: An application portal for Boston Healthcare for the Homeless Program (BHCHP) to better track their volunteers applications in a functional and sustainable way. 
+role: Design Lead
+timeline: Fall 2025 - Spring 2026
+team: "Team of 12"
+focus: Led design decisions and client communication to turn a manual volunteer process into an accessible portal.
+keyResult: Targeting ≥80% application completion and <5% submission errors; MVP soft-launch summer 2026.
+metaPreferFocus: true
+status: in-progress
+order: 2
+accent: '#1f7a6d'
+tags: ['Product Design', 'Healthcare', 'UX Research', 'Design Systems']
+cover: /assets/bhchp/cover.png
+coverAlt: BHCHP volunteer portal interface
+minimal: true
+heroVideo: /assets/bhchp/hero-demo.mp4
+links:
+  - label: View the Figma
+    url: https://www.figma.com/design/hy0oFz7LIcK32a4y10S6KR/BHCHP?node-id=0-1
+
+challengeDescription: "The core tension: a homeless-health nonprofit's volunteer pipeline ran entirely on manual effort."
+challengeLead: "Every hour staff spent chasing lost emails requests was an hour not spent on the community they serve."
+challengeBody: "As a nonprofit, Boston Health Care for the Homeless Program (BHCHP) depends heavily on volunteers, but its recruitment process was built stricly through email chains, placing the weight on a signle employee. Slow and disjointed for applicants and administrators alike, they came to Code4Community in need of a centralized volunteer application portal."
+quote: "The design had to serve two very different users at once: a first-time student applicant who wants clarity, and an overloaded administrator who wants to move fast."
+quoteAttribution: "Alissa Rogozin, Design Lead"
+
+insightsDescription: "Research with staff and stakeholders reframed the problem before any screens got drawn."
+insights:
+  - tag: "Reframe"
+    title: "Starting from Scratch"
+    body: "Coming in as design lead on a brand new project meant the first decisions were structural, not visual. I set up a design system (color tokens, type scale, component states) so engineers had something stable to build on, and future contributors across semesters wouldn't break it."
+  - tag: "Directions considered"
+    title: "Balancing Three User Types"
+    body: "Student learners needed one place to apply and track status. Discipline admins needed a queue scoped to their own discipline. Higher-level admins needed visibility across all of them, to catch delays early. Mapping who needed to see what shaped the dashboard and permissions before any visual design started."
+  - tag: Working With a Non-Technical Client"
+    title: "Non-Technical Client Communication"
+    body: "BHCHP staff described their process in spreadsheets and email chains, not product terms. Interviews meant translating that into requirements, without letting a feature request in just because it sounded useful. Walking through early flows with them, against their actual weekly process, separated real needs from assumptions."
+
+processDescription: "From a scattered intake process to a single portal with three role-aware surfaces."
+iterations:
+  - title: "Design Foundations"
+    caption: "Brand colors on a 60/30/10 rule, a Poppins/Lato type scale, and logo lockups, so nothing downstream needed a one-off decision."
+    image: /assets/bhchp/design-system-foundations.png
+    imageAlt: "BHCHP design system foundations: color palette, typography, logos, and button types"
+  - title: "Component Library: Inputs & Controls"
+    caption: "Every input, checkbox, toggle, status pill, and button state defined once, so admin and applicant screens stay consistent."
+    image: /assets/bhchp/design-system-components.png
+    imageAlt: "BHCHP component library: text fields, checkboxes, radio buttons, toggles, sliders, buttons, status pills, and dropdowns"
+  - title: "Component Library: Tables & Screens"
+    caption: "Data tables, cards, sidebar nav, and dropdowns for the admin dashboard, reused wherever the two experiences overlap."
+    image: /assets/bhchp/design-system-screens.png
+    imageAlt: "BHCHP component library: data tables, status displays, sidebar navigation, cards, and dropdowns"
+
+solutionDescription: "A single portal with three surfaces: public application, applicant status tracking, and an admin dashboard."
+solutionEmbed: "https://www.figma.com/proto/hy0oFz7LIcK32a4y10S6KR/BHCHP?content-scaling=fixed&kind=proto&node-id=2895-3862&page-id=265%3A218&scaling=scale-down&show-proto-sidebar=1&starting-point-node-id=2895%3A3862"
+solutionEmbedTitle: "Admin View"
+solutionEmbedCaption: "Application management, status updates, and create admin flow."
+overlayTag: "Core feature"
+overlayTitle: "A visible status timeline, not a 'pending' screen"
+overlayBody: "Applicants track every stage (Submitted, In Review, Accepted or Rejected, Forms Sent, Completed, Final Approval) instead of wondering if their application went anywhere."
+features:
+  - title: "Auto-populated form packets"
+    body: "On acceptance, the system pre-fills the correct agreement and waiver packet for that discipline and affiliation, with the option to add or remove documents. It replaces the most error-prone manual step admins used to own."
+  - title: "Compliance as a checklist, not a memory test"
+    body: "Final Approval stays disabled until every discipline-specific requirement is met, so the system enforces what used to rely on someone remembering."
+
+impactDescription: "Targets the team set going into a summer 2026 soft launch, not yet-measured results, since the project is still in progress."
+kpis:
+  - value: "100%"
+    label: " "
+    body: "of design system components implemented before dev handoff."
+  - value: "25"
+    label: " "
+    body: "tickets delegated to product designers and shipped."
+  - value: "8"
+    label: " "
+    body: "beta testers walked through the admin and applicant flows, giving positive feedback to the features."
+
+reflectionDescription: "What this project has already taught me about designing for two very different audiences in one system."
+reflectionLead: "Leading Without Doing It All"
+reflectionBody: "Leading a team through a project like this meant a different kind of ownership than doing the design myself. I had to decide what to hand off to other designers and what needed my judgment directly, then trust that handoff without micromanaging it. I also had to trust the client to understand what they want and make decisions in their best interest. Some of the best fixes in this project (the color hierarchy cleanup, the accessibility passes) came from other designers working inside the system I set up, not from me. That's the actual test of a design system: whether someone else can extend it correctly without asking you first. I also had to get comfortable with the system changing under me. Decisions I made early got revisited and improved by teammates later, and treating that as the system working rather than a mark against me was its own adjustment."
+---
+
+{/*
+  The case-study page renders from the frontmatter fields above (see
+  src/layouts/CaseStudyLayout.astro) — this body is not displayed. The
+  frontmatter above is now filled in from your original draft prose below.
+
+  Not yet in that draft — fill in and the layout will pick these up
+  automatically once set:
+  - iterations (Design Process section) — no low-fi/testing round was
+    described, only the final craft details (hover states, autosave,
+    accessibility) — fold those in here if you want a testing narrative,
+    or leave as-is if there wasn't a separate testing round
+  - tableTitle / tableRows — no measured before/after values yet (the
+    <2s page-load target above wasn't carried into a KPI card since it
+    didn't have a clean 3rd label to pair with; add it back if you want
+    a 4th KPI)
+  - the "Demo" walkthrough video link mentioned below
+  - quoteAttribution — confirm this reads as your own framing, not a
+    specific stakeholder's words
+
+  Original draft prose preserved below so nothing is lost.
+
+## Context
+
+Boston Health Care for the Homeless Program (BHCHP) delivers care to people experiencing homelessness across Boston. Like many nonprofits, it leans heavily on student learners and volunteers — but recruiting them ran on a **decentralized, manual, time-intensive process**: applications arrived through scattered channels, discipline administrators tracked them by hand, and required agreements and waivers were chased down one email at a time.
+
+Every hour staff spent shepherding paperwork was an hour not spent on the community they serve.
+
+## The problem
+
+There was no single place to apply, track a status, or manage the pipeline. Applications weren't reliably routed to the right discipline (Nursing, Medicine, and others), status was opaque to applicants, and compliance — proof of affiliation, immunization records, background checks — lived in people's heads and inboxes.
+
+**How might we** give applicants a clear, self-serve path and give administrators a routed, low-overhead way to review and onboard them?
+
+## My role
+
+I led design as part of a Code4Community team (a PM, a tech lead, engineers, and four BHCHP stakeholders). I owned the research synthesis, information architecture, end-to-end flows, and the hi-fi UI for both sides of the product — the public applicant experience and the internal admin dashboard — and partnered closely with the tech lead to keep the design buildable against a real backend.
+
+<blockquote>
+The design had to serve two very different users at once: a first-time student applicant who wants clarity, and an overloaded administrator who wants to move fast.
+</blockquote>
+
+## Process
+
+**Key insight — the pipeline, not the form, was the bottleneck.** It was tempting to treat this as "build a nicer application form." Discovery with staff reframed it: the real cost was in *routing, review, and compliance follow-up*. That pushed the design toward a status-driven system with a clear state machine — Submitted → In Review → Accepted/Rejected → Forms Sent → Completed → Final Approval — rather than a prettier intake.
+
+**Directions considered.** We weighed (a) a lightweight form + shared spreadsheet, (b) an off-the-shelf form tool with manual handoffs, and (c) a purpose-built portal with role-based access and automated form generation. We diverged toward (c) because discipline-based routing and secure document handling — non-negotiable for a healthcare org — couldn't be met credibly by the lighter options.
+
+**The decision that mattered most — role-based visibility.** Discipline administrators must see *only* their discipline's applicants; higher-level admins oversee everything. Designing around that constraint early shaped the whole IA, the dashboard filters, and how discipline changes reset a review.
+
+## The solution
+
+A single portal with three surfaces:
+
+<Figure placeholder="Applicant flow — application → account → status timeline (drop in from Figma)" wide />
+
+- **Public application form** — routes each submission to the right discipline, validates inline, prevents duplicate accounts, and confirms by email within minutes.
+- **Applicant portal** — a status timeline, a documents-and-forms tab with live statuses, secure uploads, and clear "action required" prompts.
+- **Admin dashboard** — role-scoped list views with filters by discipline, status, and date; an application detail view; accept/reject with reason capture; and an auto-populated required-forms packet on acceptance.
+
+### Key decisions and why
+
+- **A visible status timeline over a plain "pending" state.** Applicants abandon when they can't tell what's happening; making every state legible is the single biggest lever on the ≥80% completion target.
+- **Auto-populated form packets driven by a rules engine.** Rather than admins hand-assembling agreements per discipline and affiliation, acceptance pre-fills the correct packet — with the option to add or remove before sending. It cuts the most error-prone manual step.
+- **Compliance as a first-class checklist, not an afterthought.** "Final Approval" stays disabled until every discipline-specific item is met — so the system enforces what used to rely on memory.
+
+### Craft & edge cases
+
+Button hover/active/disabled states are clearly distinguished; errors surface inline with descriptive, fix-oriented text; drafts auto-save with toast confirmation. Accessibility was scoped in, not bolted on — sufficient contrast, full keyboard navigation, and ARIA labeling throughout.
+
+## Outcome
+
+The team defined success up front (a credibility point worth stating honestly):
+
+- **≥80%** application completion rate
+- **&lt;5%** error rate in submission/processing
+- **&lt;2s** average page load; **&lt;30s** for document-status sync
+
+Backend MVP is targeted for end of Fall 2025 and the frontend for end of Spring 2026, with iterative usability testing through spring–summer and a **soft launch for affiliated learners in summer 2026**.
+
+**An honest gap:** the MVP intentionally accepts only institution-affiliated learners and leaves shift scheduling out of scope. Open questions I'd still want to resolve with the client — how school affiliation is validated, and the document-retention policy for signed PDFs — are exactly the kind of details that decide whether the system is trusted in practice.
+
+> **Demo:** a walkthrough video exists — it should be hosted (YouTube/Vimeo/Loom) and embedded here rather than committed to the repo. *(Placeholder — add the link.)*
+
+## Reflection
+
+This project sharpened how I design *for two audiences inside one system* and how much good UX in a regulated context is really about making constraints — routing, compliance, permissions — feel effortless to the people they protect. Designing against a real backend with a tech lead also kept me honest: the best flow is the one that ships.
+*/}

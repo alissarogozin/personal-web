@@ -1,0 +1,58 @@
+---
+// Use inside case study MDX for images/screens with captions.
+// <Figure src="/assets/bhchp/dashboard.png" alt="..." caption="..." wide />
+interface Props {
+  src?: string;
+  alt?: string;
+  caption?: string;
+  wide?: boolean;
+  placeholder?: string;
+}
+const { src, alt = '', caption, wide = false, placeholder } = Astro.props;
+---
+
+<figure class={`figure ${wide ? 'figure--wide' : ''}`}>
+  {
+    src ? (
+      <img src={src} alt={alt} loading="lazy" decoding="async" />
+    ) : (
+      <div class="figure__placeholder">
+        <span>{placeholder ?? 'Visual to add'}</span>
+      </div>
+    )
+  }
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .figure { margin: 2rem 0; }
+  .figure img,
+  .figure__placeholder {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    width: 100%;
+    background: var(--surface);
+  }
+  .figure__placeholder {
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    border-style: dashed;
+    color: var(--text-faint);
+    font-size: var(--fs-caption);
+  }
+  .figure figcaption {
+    margin-top: 0.6rem;
+    font-size: var(--fs-caption);
+    color: var(--text-faint);
+    max-width: var(--maxw-prose);
+  }
+  /* Break out of the prose column for wide visuals */
+  .figure--wide {
+    width: min(var(--maxw), 100%);
+    margin-inline: calc((var(--maxw-prose) - min(var(--maxw), 100%)) / 2);
+  }
+  @media (max-width: 60rem) {
+    .figure--wide { width: 100%; margin-inline: 0; }
+  }
+</style>

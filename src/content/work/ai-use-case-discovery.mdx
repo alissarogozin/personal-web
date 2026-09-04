@@ -1,0 +1,90 @@
+---
+title: AI Use Case Discovery Tool
+hook: "Red Hat sellers were pitching AI solutions partners weren't actually staffed to co-sell. This tool tells them what's real in the field."
+summary: "A GTM enablement project bridging the disconnect between partner AI use case marketing claims and real-world field execution through a NotebookLM discovery tool."
+role: "AI Ecosystem Intern"
+timeline: "Summer 2026"
+team: "Global Partner Ecosystem Team"
+focus: "Mapping AI Use Cases and building a NotebookLM discovery tool end-to-end."
+status: in-progress
+order: 1
+accent: '#a8443f'
+tags: ['GTM Strategy', 'Enterprise AI', 'User Research']
+cover: /assets/ai-use-case-discovery/cover.png
+coverAlt: Red Hat AI use case discovery tool cover
+minimal: true
+
+challengeDescription: " "
+challengeLead: "There is a significant discrepancy between the exhaustive AI
+capabilities our partners market on their websites and the use cases
+they are actively investing and selling in the field."
+challengeBody: "Red Hat's partners (Cisco, Dell, Lenovo, etc.) market broad AI capabilities on paper, but sellers had no reliable way to know which use cases actually had real field investment, dedicated resources, and repeatable GTM motions behind them. This gap led to wasted sales effort, misaligned product assumptions, and missed opportunities to position Red Hat's AI portfolio credibly in customer conversations."
+quote: "When I walk into a meeting with a customer using Cisco or Dell hardware, what is the exact, validated 'next best action' and Red Hat AI attach story I should pitch?"
+quoteAttribution: "Persona: The Red Hat Seller"
+
+insightsDescription: "Validated through interviews with Partner Account Managers (PAMs) and partner leaders across Red Hat's OEM and ISV ecosystem."
+insights:
+  - tag: "Inventory Schema"
+    title: "Going Straight to the Field"
+    body: "Interviews with PAMs and partner leaders confirmed a real disconnect. I mapped it into a formal inventory: Partner Hierarchy, NVIDIA Focus Areas, Target Vertical, Certified Hardware, Deployment Architectures (RHAIE), and Pre/Post-Sale GTM strategy, turning scattered claims into something sellers could query."
+  - tag: "Stress Test: FSI"
+    title: "Financial Services Deepdive"
+    body: "To stress-test the framework, I applied it to a regulated, high-stakes vertical: fraud detection. I traced the full path from partner hardware (Cisco, Lenovo, Dell AI Factory) through MLOps platforms (OpenShift AI, vLLM) to the customer-facing application, confirming the inventory held up against real deployment complexity, not just a hypothetical."
+  - tag: "Adoption"
+    title: "An Unmaintainable Database is Worthless"
+    body: "The inventory only mattered if sellers actually used it, before a call or as active research, not buried in a shared drive. That reframed the goal: not a database, but a tool designed for seller adoption."
+
+processDescription: "Three phases: research the gap, structure the inventory, and build the system sellers actually use."
+processIntro: "Phase 1, Research Gathering, meant interviewing Partner Account Managers and partner leaders to separate AI use cases with genuine field investment and dedicated sellers behind them from what partners were merely marketing. Phase 2, Use Case Inventory Structuring, organized that validated data into a comprehensive inventory mapping partner capabilities, certified hardware, and GTM strategies directly to the RHAIE and RHAIFN portfolios, then stress-tested it against a real, high-stakes vertical: fraud detection in Financial Services. What came out of those two phases was a three-part system: the Use Case Inventory as the validated, structured source of truth; a NotebookLM Knowledge Assistant sellers query in natural language, like \"How is Cisco targeting fraud detection?\", for real-time, grounded answers; and a closed feedback loop, where sellers feed newly discovered use cases back into the inventory, keeping it current without a central bottleneck."
+iterations:
+  - title: "Phase 1: Research Gathering"
+    caption: "Interviewed Partner Account Managers and partner leaders to identify the AI use cases with genuine field investment and dedicated sellers behind them, rather than what partners marketed on paper."
+  - title: "Phase 2: Inventory Structuring & FSI Blueprint"
+    caption: "Organized validated data into a comprehensive inventory mapping partner capabilities, certified hardware, and GTM strategies to the RHAIE and RHAIFN portfolios, then stress-tested it against Financial Services fraud detection, tracing the path from partner hardware (Cisco, Lenovo, Dell AI Factory) through OpenShift AI and vLLM to the end customer."
+processEmbed: /assets/ai-use-case-discovery/intern-expo.pdf
+
+hideSolution: true
+solutionDescription: "A bi-directional NotebookLM tool that turns the structured inventory into a seller's on-call knowledge assistant."
+overlayTag: "Core feature"
+overlayTitle: "Ask a question, get a talk track and a database row"
+overlayBody: "Sellers ask NotebookLM real questions, like what regulatory hurdles block Gen AI fraud detection for banking customers or the next best action for a client on Cisco hardware, and get back a tailored talk track plus a structured, copy-pasteable row from the inventory."
+features:
+  - title: "Query the inventory in plain language"
+    body: "A seller preparing for an account call can ask NotebookLM plain-language questions about regulatory constraints, certified hardware, or next-best-action by partner, instead of digging through partner pitch decks."
+  - title: "A living, self-updating database"
+    body: "If a seller uncovers a new use case in the field, they copy that row straight back into the master inventory, keeping it current for the whole global GTM organization rather than a snapshot that goes stale."
+
+hideImpact: true
+impactDescription: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+kpis:
+  - value: "00%"
+    label: "Lorem ipsum label"
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
+  - value: "0.0x"
+    label: "Lorem ipsum label"
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
+  - value: "00%"
+    label: "Lorem ipsum label"
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
+
+reflectionDescription: "Stepped outside my Computer Science & Design
+comfort zone."
+reflectionLead: "Stepping outside my Computer Science & Design
+Comfort Zone."
+reflectionBody: "Coming from a CS and Design background, I had to learn how enterprise go-to-market strategy actually operates: how partners structure sales motions, how hardware and platform decisions ripple into deployment, and how sellers make decisions in real time. That shift in perspective shaped every part of the project. NotebookLM was also new territory, and getting it to turn messy field notes into clean, structured data took real iteration on prompt design. I learned to treat prompting as its own design problem, not just a technical shortcut. Overall, I enjoyed putting on a new hat (pun intended) and learning how buisness needs operate in the the product cycle"
+---
+
+{/*
+  The case-study page renders entirely from the frontmatter above (see
+  src/layouts/CaseStudyLayout.astro) — this body is not displayed.
+
+  Not yet in the source material (Case Study Templates PDF) — fill in and
+  the layout will pick these up automatically once set:
+  - keyResult (top of file)
+  - links (View the Figma / deck, etc.)
+  - impactDescription, kpis, tableTitle, tableRows — no adoption/results
+    numbers were included yet (e.g. seller usage, deal-cycle impact,
+    stakeholder feedback)
+  - reflectionDescription, reflectionLead, reflectionBody — no reflection
+    section was written for this project yet
+*/}

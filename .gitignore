@@ -1,0 +1,17 @@
+# build output
+dist/
+# generated types
+.astro/
+# dependencies
+node_modules/
+# logs
+npm-debug.log*
+# environment
+.env
+.env.production
+# macOS
+.DS_Store
+
+# raw working files / source material for public/assets/ (not needed by the
+# built site, and contains files over GitHub's 100MB limit)
+current personal projects/

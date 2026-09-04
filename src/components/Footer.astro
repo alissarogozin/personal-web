@@ -1,0 +1,27 @@
+---
+const year = 2026; // build-time constant; bump as needed
+---
+
+<footer class="footer">
+  <div class="wrap footer__meta">
+    <span>© {year} alissa rogozin</span>
+    <span>Designed & built by alissa</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: clamp(4rem, 10vw, 8rem);
+    border-top: 1px solid var(--border);
+    background: var(--bg-elev);
+    padding-block: clamp(2.5rem, 6vw, 4rem) 1.5rem;
+  }
+  .footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: space-between;
+    font-size: var(--fs-caption);
+    color: var(--text-faint);
+  }
+</style>

@@ -1,0 +1,908 @@
+---
+// Case-study page frame — modeled on the "case-study-page" frame from the
+// Personal-Website Figma file (node 2018:3). Numbered sections (Challenge →
+// Insights → Process → Solution → Impact → Reflection) with alternating
+// background bands, a KPI row + comparison table, and a "next project"
+// teaser. Every image slot is a placeholder box (no real images) until
+// screens/photos are dropped in by hand.
+import BaseLayout from './BaseLayout.astro';
+
+interface Meta { label: string; value: string; }
+interface Link { label: string; url: string; }
+interface Insight { tag: string; title: string; body: string; }
+interface CollagePhoto { src: string; alt?: string; }
+interface Iteration { title: string; caption: string; image?: string; imageAlt?: string; images?: CollagePhoto[]; }
+interface Feature { title: string; body: string; }
+interface Kpi { value: string; label: string; body: string; }
+interface TableRow { metric: string; before: string; after: string; }
+interface NextProject { title: string; slug: string; }
+
+interface Props {
+  title: string;
+  subtitle: string;
+  tags?: string[];
+  accent?: string;
+  meta: Meta[];
+  // External references (Figma, prototype, source datasets, …) shown as a
+  // row of pill links below the meta grid.
+  links?: Link[];
+  heroEmbed?: string;
+  // Muted, looping video shown in place of the hero image/embed. Takes
+  // priority over both heroEmbed and the placeholder.
+  heroVideo?: string;
+  // See content.config.ts: drops the per-section description line, challenge
+  // pull-quote, insight-card number/tag row, solution features grid, and
+  // impact comparison table to match the Figma "case-study-page" frame
+  // (node 2018:3) — everything else (tokens, spacing, hierarchy) is shared.
+  minimal?: boolean;
+
+  challengeDescription?: string;
+  challengeLead?: string;
+  challengeBody?: string;
+  quote?: string;
+  quoteAttribution?: string;
+
+  insightsDescription?: string;
+  insights?: Insight[];
+
+  processDescription?: string;
+  processIntro?: string;
+  // Optional slide-deck embed (e.g. a PDF under /public) shown in the
+  // process sidebar. When set, that section's sidebar column widens from
+  // the usual 20rem to make the embed legible — see `.cs2-split--wide`.
+  processEmbed?: string;
+  iterations?: Iteration[];
+  // Force the full-width, alternating-row "showcase" layout (see
+  // `processShowcase` below) even before real screenshots exist — each
+  // iteration then renders its dashed placeholder box at showcase size
+  // instead of the compact grid-card size. Normally this layout only
+  // kicks in once an iteration has a real `image` set.
+  processShowcase?: boolean;
+
+  // Drop the Solution section entirely (rather than deleting its content)
+  // and renumber the sections after it up. See content.config.ts.
+  hideSolution?: boolean;
+  solutionDescription?: string;
+  // Interactive Figma prototype shown in place of the mockup placeholder,
+  // with a caption labeling which flow it is (e.g. "Admin View: ...").
+  solutionEmbed?: string;
+  solutionEmbedTitle?: string;
+  solutionEmbedCaption?: string;
+  // Muted, looping demo video shown in place of the mockup placeholder.
+  // Takes priority over solutionEmbed, same as heroVideo does over heroEmbed.
+  solutionVideo?: string;
+  // Skip the generic mockup/overlay placeholder block entirely — use when
+  // `solutionShowcase` below already carries the section's real visuals
+  // and a placeholder box would just be redundant filler above them.
+  hideSolutionMock?: boolean;
+  overlayTag?: string;
+  overlayTitle?: string;
+  overlayBody?: string;
+  features?: Feature[];
+  // Additional full-width, alternating-row sub-sections within Solution
+  // (e.g. "the dashboard's hover state," "the poster in a real bus shelter")
+  // — same shape and styling as the Design Process showcase.
+  solutionShowcase?: Iteration[];
+
+  // Drop the Impact & Results section entirely (rather than deleting its
+  // content) and renumber the sections after it up. See content.config.ts.
+  hideImpact?: boolean;
+  impactDescription?: string;
+  kpis?: Kpi[];
+  tableTitle?: string;
+  tableRows?: TableRow[];
+
+  reflectionDescription?: string;
+  reflectionLead?: string;
+  reflectionBody?: string;
+
+  nextProject?: NextProject;
+}
+
+const {
+  title, subtitle, tags = [], accent, meta, links = [], heroEmbed, heroVideo, minimal = false,
+  challengeDescription, challengeLead, challengeBody, quote, quoteAttribution,
+  insightsDescription, insights = [],
+  processDescription, processIntro, processEmbed, iterations = [], processShowcase: forceShowcase = false,
+  hideSolution = false, solutionDescription, solutionEmbed, solutionEmbedTitle, solutionEmbedCaption, solutionVideo, hideSolutionMock = false, overlayTag, overlayTitle, overlayBody, features = [], solutionShowcase = [],
+  hideImpact = false, impactDescription, kpis = [], tableTitle, tableRows = [],
+  reflectionDescription, reflectionLead, reflectionBody,
+  nextProject,
+} = Astro.props;
+
+// Hide a numbered section entirely rather than fill it with the layout's
+// own placeholder guidance copy when nothing real has been written for it
+// yet (see e.g. ai-use-case-discovery.mdx, which has no Impact/Reflection
+// content). Sections with *some* real content still fall back to per-field
+// placeholder text below, since a partially-filled section isn't "filler."
+const hasChallenge = Boolean(challengeDescription || challengeLead || challengeBody || quote);
+const hasInsights = Boolean(insightsDescription) || insights.length > 0;
+const hasProcess = Boolean(processDescription || processIntro) || iterations.length > 0;
+// When iterations carry real images, the section is about showcasing a
+// design system rather than narrating a process — so it drops the fixed
+// 20rem sidebar for a full-width, alternating image/text layout instead.
+const processShowcase = forceShowcase || iterations.some((it) => it.image);
+const hasSolution = !hideSolution && (Boolean(solutionDescription || solutionEmbed || solutionVideo || overlayTag || overlayTitle || overlayBody) || features.length > 0);
+const solutionEmbedUrl = solutionEmbed ? `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(solutionEmbed)}` : undefined;
+const hasImpact = !hideImpact && (Boolean(impactDescription) || kpis.length > 0 || tableRows.length > 0);
+const hasReflection = Boolean(reflectionDescription || reflectionLead || reflectionBody);
+
+// Numbers count only the sections actually rendered, so dropping one (e.g.
+// hideSolution) shifts everything after it up instead of leaving a gap.
+let sectionCount = 0;
+const nextNum = () => String(++sectionCount).padStart(2, '0');
+const numChallenge = hasChallenge ? nextNum() : null;
+const numInsights = hasInsights ? nextNum() : null;
+const numProcess = hasProcess ? nextNum() : null;
+const numSolution = hasSolution ? nextNum() : null;
+const numImpact = hasImpact ? nextNum() : null;
+const numReflection = hasReflection ? nextNum() : null;
+---
+
+<BaseLayout title={title} description={subtitle}>
+  <article class="cs2" style={accent ? `--accent: ${accent};` : undefined}>
+    <!-- Hero -->
+    <header class="cs2-band wrap cs2-hero">
+      <a class="cs2-back" href="/#work">← All work</a>
+      {
+        tags.length > 0 && (
+          <ul class="cs2-tags">
+            {/* Reuses the global .tag pill (see global.css) so these match
+                the tags shown on the homepage project-card grid exactly. */}
+            {tags.map((t) => <li class="tag">{t}</li>)}
+          </ul>
+        )
+      }
+      <h1 class="cs2-title">{title}</h1>
+      <p class="cs2-subtitle">{subtitle}</p>
+
+      <dl class="cs2-meta">
+        {
+          meta.map((m) => (
+            <div class="cs2-meta__item">
+              <dt>{m.label}</dt>
+              <dd>{m.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      {
+        links.length > 0 && (
+          <ul class="cs2-links">
+            {
+              links.map((l) => (
+                <li>
+                  <a class="cs2-links__item" href={l.url} target="_blank" rel="noopener noreferrer">
+                    {l.label} →
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        )
+      }
+
+      {
+        heroVideo ? (
+          <div class="cs2-hero__video">
+            <video
+              src={heroVideo}
+              autoplay
+              loop
+              muted
+              playsinline
+              disablepictureinpicture
+              aria-label={`${title} — product walkthrough`}
+            />
+          </div>
+        ) : heroEmbed ? (
+          <div class="cs2-hero__embed">
+            <iframe
+              loading="lazy"
+              src={heroEmbed}
+              allow="fullscreen"
+              allowfullscreen
+              title={`${title} — presentation`}
+            />
+          </div>
+        ) : (
+          <div class="cs2-placeholder cs2-hero__image">
+            <span>[Hero image — a wide, high-quality shot of the finished product or key screen in context]</span>
+          </div>
+        )
+      }
+    </header>
+
+    <!-- 01 Challenge (split) -->
+    {
+      hasChallenge && (
+        <section class="cs2-band cs2-band--elev wrap cs2-split">
+          <div class="cs2-split__head">
+            <p class="cs2-num">{numChallenge}</p>
+            <div>
+              <h2 class="cs2-h2">The Challenge</h2>
+              {!minimal && <p class="cs2-desc">{challengeDescription ?? '[One sentence framing what this section covers — the core tension or problem you’re solving]'}</p>}
+            </div>
+          </div>
+          <div class="cs2-split__body">
+            <p class="cs2-lead">{challengeLead ?? '[Lead sentence — the sharpest, most concrete statement of the problem, in plain language]'}</p>
+            <p class="cs2-p">{challengeBody ?? '[2–4 sentences of supporting context: who is affected, what’s broken today, and why it matters. Include a concrete number or detail if you have one.]'}</p>
+            {
+              !minimal && (
+                <blockquote class="cs2-quote">
+                  <p>&ldquo;{quote ?? '[Optional pull-quote from a user, stakeholder, or teammate that captures the stakes of the problem]'}&rdquo;</p>
+                  <cite>{quoteAttribution ?? '[Who said it — name, role, organization]'}</cite>
+                </blockquote>
+              )
+            }
+          </div>
+        </section>
+      )
+    }
+
+    <!-- 02 Discovery & Insights (stacked) -->
+    {
+      hasInsights && (
+        <section class="cs2-band wrap">
+          <div class="cs2-stack__head">
+            <p class="cs2-num">{numInsights}</p>
+            <div>
+              <h2 class="cs2-h2">Discovery & Insights</h2>
+              {!minimal && <p class="cs2-desc">{insightsDescription ?? '[One sentence on your research method — interviews, shadowing, surveys, data — and its scale]'}</p>}
+            </div>
+          </div>
+          {
+            insights.length > 0 && (
+              <div class="cs2-grid cs2-grid--3">
+                {
+                  insights.map((ins, i) => (
+                    <div class="cs2-card">
+                      {
+                        !minimal && (
+                          <div class="cs2-card__top">
+                            <p class="cs2-card__num">{String(i + 1).padStart(2, '0')}</p>
+                            <span class="cs2-tag">{ins.tag}</span>
+                          </div>
+                        )
+                      }
+                      <h3 class="cs2-card__title">{ins.title}</h3>
+                      <p class="cs2-card__body">{ins.body}</p>
+                    </div>
+                  ))
+                }
+              </div>
+            )
+          }
+        </section>
+      )
+    }
+
+    <!-- 03 Design Process (showcase: full-width, alternating images) -->
+    {
+      hasProcess && processShowcase && (
+        <section class="cs2-band cs2-band--elev wrap">
+          <div class="cs2-stack__head">
+            <p class="cs2-num">{numProcess}</p>
+            <div>
+              <h2 class="cs2-h2">Design Process</h2>
+              {!minimal && <p class="cs2-desc">{processDescription ?? '[One sentence describing the arc of your process — e.g. from messy inputs to a simple, validated direction]'}</p>}
+            </div>
+          </div>
+          {processIntro && <p class="cs2-p cs2-showcase__intro">{processIntro}</p>}
+          <div class="cs2-showcase">
+            {
+              iterations.map((it) => (
+                <div class="cs2-showcase__item">
+                  <div class="cs2-showcase__media">
+                    {
+                      it.image ? (
+                        <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
+                      ) : (
+                        <div class="cs2-placeholder cs2-iter__placeholder">
+                          <span>[Screenshot or photo — {it.title}]</span>
+                        </div>
+                      )
+                    }
+                  </div>
+                  <div class="cs2-showcase__text">
+                    <p class="cs2-showcase__title">{it.title}</p>
+                    <p class="cs2-showcase__caption">{it.caption}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+      )
+    }
+
+    <!-- 03 Design Process (split) -->
+    {
+      hasProcess && !processShowcase && (
+        <section class="cs2-band cs2-band--elev wrap cs2-split">
+          <div class="cs2-split__head">
+            <p class="cs2-num">{numProcess}</p>
+            <div>
+              <h2 class="cs2-h2">Design Process</h2>
+              {!minimal && <p class="cs2-desc">{processDescription ?? '[One sentence describing the arc of your process — e.g. from messy inputs to a simple, validated direction]'}</p>}
+            </div>
+          </div>
+          <div class="cs2-split__body">
+            {
+              processEmbed ? (
+                <div class="cs2-process-embed">
+                  <iframe
+                    loading="lazy"
+                    src={`${processEmbed}#toolbar=0&navpanes=0&view=FitH`}
+                    title={`${title} — process deck`}
+                  />
+                </div>
+              ) : (
+                <Fragment>
+                  {
+                    processIntro ? (
+                      <p class="cs2-p">{processIntro}</p>
+                    ) : iterations.length === 0 ? (
+                      <p class="cs2-p">[A paragraph: the directions you considered, the constraints that mattered, and the decision that shaped everything downstream]</p>
+                    ) : null
+                  }
+                  {
+                    iterations.length > 0 && (
+                      <div class:list={['cs2-grid', iterations.length >= 3 ? 'cs2-grid--3' : 'cs2-grid--2']}>
+                        {
+                          iterations.map((it) => (
+                            <div class="cs2-iter">
+                              <div class="cs2-placeholder cs2-iter__placeholder">
+                                <span>[Screenshot or photo — {it.title}]</span>
+                              </div>
+                              <p class="cs2-iter__title">{it.title}</p>
+                              <p class="cs2-iter__caption">{it.caption}</p>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    )
+                  }
+                </Fragment>
+              )
+            }
+          </div>
+        </section>
+      )
+    }
+
+    <!-- 04 The Solution (stacked) -->
+    {
+      hasSolution && (
+        <section class="cs2-band wrap">
+          <div class="cs2-stack__head">
+            <p class="cs2-num">{numSolution}</p>
+            <div>
+              <h2 class="cs2-h2">The Solution</h2>
+              {!minimal && <p class="cs2-desc">{solutionDescription ?? '[One sentence describing the final product/system at a high level]'}</p>}
+            </div>
+          </div>
+
+          {
+            !hideSolutionMock && (
+              <Fragment>
+                {
+                  solutionEmbedTitle && (
+                    <div class="cs2-bigmock__label">
+                      {/* Same title/caption pairing and type scale as the design-
+                          process showcase (.cs2-showcase__title/__caption), so
+                          this embed's label reads as part of the same system. */}
+                      <p class="cs2-showcase__title">{solutionEmbedTitle}</p>
+                      {solutionEmbedCaption && <p class="cs2-showcase__caption">{solutionEmbedCaption}</p>}
+                    </div>
+                  )
+                }
+                <div class="cs2-bigmock">
+                  {
+                    solutionVideo ? (
+                      <div class="cs2-bigmock__video">
+                        <video
+                          src={solutionVideo}
+                          autoplay
+                          loop
+                          muted
+                          playsinline
+                          disablepictureinpicture
+                          aria-label={solutionEmbedTitle ?? `${title} — solution demo`}
+                        />
+                      </div>
+                    ) : solutionEmbedUrl ? (
+                      <div class="cs2-bigmock__embed">
+                        <iframe
+                          loading="lazy"
+                          src={solutionEmbedUrl}
+                          allow="fullscreen"
+                          allowfullscreen
+                          title={solutionEmbedTitle ?? `${title} — interactive prototype`}
+                        />
+                      </div>
+                    ) : (
+                      <div class="cs2-placeholder cs2-bigmock__placeholder">
+                        <span>[Full-bleed screenshot or photo of the final solution in use]</span>
+                      </div>
+                    )
+                  }
+                  {
+                    /* Skipped over a video or embed: the overlay card would
+                       float over part of its own UI (a video's content, or
+                       an interactive prototype's corner controls), competing
+                       with something meant to be watched or clicked through
+                       rather than read. */
+                    !solutionVideo && !solutionEmbedUrl && (
+                      <div class="cs2-bigmock__overlay">
+                        <p class="cs2-bigmock__eyebrow">{overlayTag ?? '[Core feature]'}</p>
+                        <p class="cs2-bigmock__title">{overlayTitle ?? '[Name of the standout feature shown in the hero image]'}</p>
+                        <p class="cs2-bigmock__body">{overlayBody ?? '[1–2 sentences: what this feature does and the specific problem it solves]'}</p>
+                      </div>
+                    )
+                  }
+                </div>
+              </Fragment>
+            )
+          }
+
+          {
+            !minimal && features.length > 0 && (
+              <div class="cs2-grid cs2-grid--2 cs2-grid--features">
+                {
+                  features.map((f) => (
+                    <div class="cs2-feature">
+                      <p class="cs2-feature__title">{f.title}</p>
+                      <p class="cs2-feature__body">{f.body}</p>
+                    </div>
+                  ))
+                }
+              </div>
+            )
+          }
+
+          {
+            solutionShowcase.length > 0 && (
+              <div class="cs2-showcase cs2-showcase--sub">
+                {
+                  solutionShowcase.map((it) => (
+                    <div class="cs2-showcase__item">
+                      {
+                        it.images && it.images.length > 0 ? (
+                          <div class="cs2-showcase__collage">
+                            {
+                              it.images.map((img) => (
+                                <img src={img.src} alt={img.alt ?? it.title} loading="lazy" />
+                              ))
+                            }
+                          </div>
+                        ) : (
+                          <div class="cs2-showcase__media">
+                            {
+                              it.image ? (
+                                <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
+                              ) : (
+                                <div class="cs2-placeholder cs2-iter__placeholder">
+                                  <span>[Screenshot or photo — {it.title}]</span>
+                                </div>
+                              )
+                            }
+                          </div>
+                        )
+                      }
+                      <div class="cs2-showcase__text">
+                        <p class="cs2-showcase__title">{it.title}</p>
+                        <p class="cs2-showcase__caption">{it.caption}</p>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            )
+          }
+        </section>
+      )
+    }
+
+    <!-- 05 Impact & Results (stacked) -->
+    {
+      hasImpact && (
+        <section class="cs2-band cs2-band--elev wrap">
+          <div class="cs2-stack__head">
+            <p class="cs2-num">{numImpact}</p>
+            <div>
+              <h2 class="cs2-h2">Impact & Results</h2>
+              {!minimal && <p class="cs2-desc">{impactDescription ?? '[One sentence on how/when this was measured — timeframe, sample size, target vs. actual]'}</p>}
+            </div>
+          </div>
+
+          {
+            kpis.length > 0 && (
+              <div class="cs2-grid cs2-grid--3 cs2-grid--kpi">
+                {
+                  kpis.map((k) => (
+                    <div class="cs2-kpi">
+                      <p class="cs2-kpi__value">{k.value}</p>
+                      <p class="cs2-kpi__label">{k.label}</p>
+                      <p class="cs2-kpi__body">{k.body}</p>
+                    </div>
+                  ))
+                }
+              </div>
+            )
+          }
+
+          {
+            !minimal && tableRows.length > 0 && (
+              <div class="cs2-table-wrap">
+                <p class="cs2-table-title">{tableTitle ?? '[Table title, e.g. Before vs. After]'}</p>
+                <div class="cs2-table">
+                  <div class="cs2-table__row cs2-table__row--head">
+                    <p>Workflow metric</p>
+                    <p>Before</p>
+                    <p>After</p>
+                  </div>
+                  {
+                    tableRows.map((r) => (
+                      <div class="cs2-table__row">
+                        <p class="cs2-table__metric">{r.metric}</p>
+                        <p class="cs2-table__before">{r.before}</p>
+                        <p class="cs2-table__after">{r.after}</p>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            )
+          }
+        </section>
+      )
+    }
+
+    <!-- 06 Reflections (split) -->
+    {
+      hasReflection && (
+        <section class="cs2-band cs2-band--elev cs2-band--reflection wrap cs2-split">
+          <div class="cs2-split__head">
+            <p class="cs2-num">{numReflection}</p>
+            <div>
+              <h2 class="cs2-h2">Reflections</h2>
+              {!minimal && <p class="cs2-desc">{reflectionDescription ?? '[One sentence framing what this section is about]'}</p>}
+            </div>
+          </div>
+          <div class="cs2-split__body">
+            <p class="cs2-lead">{reflectionLead ?? '[The single biggest lesson from this project, stated as a clear claim]'}</p>
+            <p class="cs2-p">{reflectionBody ?? '[2–4 sentences: what you’d do differently, what surprised you, or how this shaped how you work now]'}</p>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Next project teaser -->
+    {
+      nextProject && (
+        <section class="cs2-teaser">
+          <p class="cs2-teaser__eyebrow">Next selected project</p>
+          <a class="cs2-teaser__title" href={`/work/${nextProject.slug}`}>{nextProject.title}</a>
+          <a class="cs2-teaser__btn" href={`/work/${nextProject.slug}`}>View case study →</a>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .cs2-band { padding-block: clamp(3rem, 7vw, 6.25rem); }
+  .cs2-band--elev { background: var(--bg-elev); }
+  /* Gap below the Reflections white band (not padding inside it) so the
+     page's base background shows through as a visible edge before the next
+     section (or the dark teaser band, when there's no next project),
+     instead of the white band bleeding straight into it. */
+  .cs2-band--reflection { margin-bottom: clamp(2rem, 5vw, 4rem); }
+
+  .cs2-back { font-size: var(--fs-body); font-weight: 600; text-decoration: none; color: var(--text-soft); }
+  .cs2-back:hover { color: var(--accent); }
+
+  .cs2-placeholder {
+    display: grid; place-items: center; text-align: center;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text-faint);
+    font-size: var(--fs-caption);
+    padding: 1.5rem;
+  }
+
+  /* Hero */
+  .cs2-hero { padding-top: clamp(2rem, 6vw, 4rem); }
+  .cs2-tags { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin-top: 1.5rem; }
+  .cs2-tag {
+    display: inline-block; font-size: var(--fs-eyebrow); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 0.3em 0.7em; border-radius: 5px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent-ink, var(--accent));
+  }
+  .cs2-title {
+    font-family: var(--font-display);
+    font-size: var(--fs-h1);
+    line-height: 1.05;
+    max-width: 22ch;
+    margin-top: 1.25rem;
+    color: var(--text);
+  }
+  .cs2-subtitle {
+    font-size: var(--fs-h3);
+    line-height: 1.5;
+    color: var(--text-soft);
+    max-width: 52ch;
+    margin-top: 1.25rem;
+  }
+  .cs2-meta {
+    display: flex; flex-wrap: wrap; gap: clamp(1.5rem, 4vw, 2.5rem);
+    margin-top: clamp(2rem, 4vw, 2.5rem);
+    padding: clamp(1.5rem, 3vw, 2rem);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .cs2-meta__item { flex: 1 1 12rem; }
+  .cs2-meta__item dt { font-size: var(--fs-eyebrow); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-faint); }
+  .cs2-meta__item dd { margin: 0.35rem 0 0; color: var(--text); font-weight: 500; }
+
+  .cs2-links { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; list-style: none; padding: 0; margin-top: 1.25rem; }
+  .cs2-links__item { font-size: var(--fs-body); font-weight: 600; color: var(--accent-ink, var(--accent)); text-decoration: none; }
+  .cs2-links__item:hover { text-decoration: underline; }
+  .cs2-hero__image { margin-top: clamp(2rem, 4vw, 2.5rem); aspect-ratio: 16 / 7; }
+
+  /* Canva's embed iframe carries its own 16:9-ish ratio via padding-top on the
+     official embed snippet; matching that here (rather than the 16/7 of the
+     image placeholder) keeps slides from being cropped or letterboxed. */
+  .cs2-hero__embed {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-top: 56.2225%;
+    margin-top: clamp(2rem, 4vw, 2.5rem);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .cs2-hero__embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Muted looping product video. Matches the source recording's own aspect
+     ratio (1600x1006) rather than the wider 16:7 placeholder box, so
+     object-fit: cover never has to crop the top/bottom to fill it. */
+  .cs2-hero__video {
+    margin-top: clamp(2rem, 4vw, 2.5rem);
+    aspect-ratio: 1600 / 1006;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .cs2-hero__video video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Section headers */
+  .cs2-num { font-family: var(--font-display); font-size: var(--fs-h1); line-height: 0.9; color: var(--accent); }
+  .cs2-h2 { font-size: var(--fs-h2); }
+  .cs2-desc { color: var(--text-soft); font-size: var(--fs-body); margin-top: 0.4rem; max-width: 42ch; }
+
+  .cs2-split { display: grid; gap: clamp(2rem, 5vw, 4rem); }
+  .cs2-split__head { display: flex; gap: clamp(1.25rem, 3vw, 2.5rem); padding-bottom: clamp(1.5rem, 3vw, 2rem); border-bottom: 1px solid var(--border); align-items: baseline; }
+  @media (min-width: 60rem) {
+    .cs2-split { grid-template-columns: 20rem 1fr; }
+    .cs2-split__head { flex-direction: column; gap: 1rem; border-bottom: 0; padding-bottom: 0; align-items: flex-start; }
+  }
+  .cs2-split__body { display: flex; flex-direction: column; gap: clamp(1.25rem, 3vw, 2rem); }
+
+  /* Optional slide-deck embed (opt-in via the processEmbed prop): replaces
+     the process write-up entirely rather than sitting beside it, so it gets
+     the full width of the split's right column. Same aspect-ratio-via-
+     padding technique as .cs2-hero__embed; padding-top is taller than a
+     strict 16:9 (56.25%) to show more of the deck at once. No drop shadow
+     — sits flat against the section background instead of looking lifted. */
+  .cs2-process-embed {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-top: 72%;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .cs2-process-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .cs2-stack__head { display: flex; gap: clamp(1.25rem, 3vw, 2.5rem); padding-bottom: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: clamp(2rem, 4vw, 3rem); border-bottom: 1px solid var(--border); align-items: baseline; }
+
+  .cs2-lead { font-size: var(--fs-h3); font-weight: 500; color: var(--text); line-height: 1.5; }
+  .cs2-p { color: var(--text-soft); line-height: 1.7; }
+
+  .cs2-quote {
+    border-left: 3px solid var(--accent);
+    padding-left: 1.25rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .cs2-quote p { font-family: var(--font-display); font-size: var(--fs-h2); line-height: 1.3; color: var(--text); }
+  .cs2-quote cite { font-style: normal; font-size: var(--fs-eyebrow); font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-faint); }
+
+  /* Grids */
+  .cs2-grid { display: grid; gap: clamp(1.25rem, 3vw, 1.5rem); }
+  .cs2-grid--2 { grid-template-columns: 1fr; }
+  .cs2-grid--3 { grid-template-columns: 1fr; }
+  @media (min-width: 48rem) {
+    .cs2-grid--2 { grid-template-columns: 1fr 1fr; }
+    .cs2-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .cs2-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: clamp(1.5rem, 3vw, 2rem); box-shadow: var(--shadow); }
+  .cs2-card__top { display: flex; align-items: center; justify-content: space-between; }
+  .cs2-card__num { font-family: var(--font-display); font-size: var(--fs-h2); color: var(--accent); }
+  .cs2-card__title { font-size: var(--fs-h3); font-weight: 600; margin-top: 1rem; }
+  .cs2-card__body { color: var(--text-soft); font-size: var(--fs-body); line-height: 1.6; margin-top: 0.5rem; }
+
+  .cs2-iter__placeholder { aspect-ratio: 16 / 10; }
+  /* Real reference-sheet images (e.g. design-system collages) vary wildly
+     in aspect ratio — near-square, tall portrait — so this overrides the
+     placeholder's fixed 16:10 box with auto height instead of cropping
+     detail-dense screenshots to fit it. */
+  .cs2-iter__image {
+    aspect-ratio: auto;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .cs2-iter__image img { display: block; width: 100%; height: auto; }
+  .cs2-iter__title { font-weight: 600; font-size: var(--fs-body); margin-top: 0.8rem; }
+  .cs2-iter__caption { color: var(--text-faint); font-size: var(--fs-caption); margin-top: 0.2rem; line-height: 1.5; }
+
+  /* Design-process showcase: full-width, alternating image/text rows for
+     when the section is really about a design system rather than a
+     narrated process. Images run large (60% on desktop) since they're the
+     point; text is the caption, not the other way around. */
+  .cs2-showcase__intro { max-width: 68ch; margin-bottom: clamp(1rem, 3vw, 1.5rem); }
+  .cs2-showcase { display: flex; flex-direction: column; gap: clamp(2.5rem, 6vw, 4.5rem); }
+  /* Sub-showcases inside Solution (e.g. dashboard hover state, posters in
+     context) sit below the bigmock/overlay and features grid, so they need
+     their own top margin rather than the section's usual head/first-child
+     spacing. */
+  .cs2-showcase--sub { margin-top: clamp(2.5rem, 6vw, 4rem); }
+  .cs2-showcase__item { display: flex; flex-direction: column; gap: clamp(1.25rem, 3vw, 2rem); align-items: center; }
+  @media (min-width: 60rem) {
+    .cs2-showcase__item { flex-direction: row; }
+    .cs2-showcase__item:nth-child(even) { flex-direction: row-reverse; }
+  }
+  .cs2-showcase__media {
+    flex: 3 1 0;
+    min-width: 0;
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .cs2-showcase__media img { display: block; width: 100%; height: auto; }
+
+  /* Loose photo collage (opt in via an iteration's `images` array instead
+     of a single `image`): separate framed photos placed near each other at
+     deliberately mismatched heights, rather than one flattened image. */
+  .cs2-showcase__collage {
+    flex: 3 1 0;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+  .cs2-showcase__collage img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    object-fit: cover;
+  }
+  .cs2-showcase__collage img:nth-child(1) { height: clamp(150px, 21vw, 290px); }
+  .cs2-showcase__collage img:nth-child(2) { height: clamp(120px, 16vw, 220px); align-self: center; }
+  .cs2-showcase__collage img:nth-child(3) { height: clamp(170px, 23vw, 310px); }
+  .cs2-showcase__text { flex: 2 1 0; min-width: 0; }
+  .cs2-showcase__title { font-family: var(--font-display); font-size: var(--fs-h3); color: var(--text); }
+  .cs2-showcase__caption { color: var(--text-soft); line-height: 1.6; margin-top: 0.6rem; }
+
+  /* Solution */
+  .cs2-bigmock { position: relative; margin-bottom: clamp(1.5rem, 3vw, 2rem); }
+  .cs2-bigmock__label { margin-bottom: clamp(1.25rem, 3vw, 1.75rem); }
+  .cs2-bigmock__placeholder { aspect-ratio: 16 / 7; }
+  /* Interactive Figma prototype: a fixed generous height rather than the
+     placeholder's 16:7 ratio, since a clickable flow needs real room to
+     use regardless of the file's own canvas proportions. */
+  .cs2-bigmock__embed {
+    height: clamp(480px, 78vh, 860px);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .cs2-bigmock__embed iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  /* Muted looping demo video, sized to its own aspect ratio (matches
+     .cs2-hero__video's approach) rather than the embed's fixed tall
+     height, since there's no interactive canvas that needs the room. */
+  .cs2-bigmock__video {
+    aspect-ratio: 1600 / 1004;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .cs2-bigmock__video video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cs2-bigmock__overlay {
+    position: absolute; left: clamp(1rem, 3vw, 2.5rem); bottom: clamp(1rem, 3vw, 2.5rem);
+    max-width: 26rem; background: color-mix(in srgb, var(--bg-elev) 95%, transparent);
+    border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); padding: clamp(1.25rem, 2vw, 1.5rem);
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .cs2-bigmock__eyebrow { font-size: var(--fs-eyebrow); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+  .cs2-bigmock__title { font-family: var(--font-display); font-size: var(--fs-h2); color: var(--text); }
+  .cs2-bigmock__body { color: var(--text-soft); font-size: var(--fs-body); line-height: 1.5; }
+
+  .cs2-feature { background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: clamp(1.5rem, 3vw, 2rem); }
+  .cs2-feature__title { font-family: var(--font-display); font-size: var(--fs-h2); color: var(--accent); }
+  .cs2-feature__body { color: var(--text-soft); line-height: 1.6; margin-top: 0.75rem; }
+
+  /* Impact */
+  .cs2-kpi { background: var(--surface); border-radius: var(--radius); padding: clamp(1.5rem, 3vw, 2rem); }
+  .cs2-kpi__value { font-family: var(--font-display); font-size: var(--fs-h1); line-height: 1; color: var(--accent); }
+  .cs2-kpi__label { font-weight: 600; font-size: var(--fs-eyebrow); letter-spacing: 0.02em; text-transform: uppercase; margin-top: 0.6rem; }
+  .cs2-kpi__body { color: var(--text-soft); font-size: var(--fs-body); line-height: 1.5; margin-top: 0.4rem; }
+
+  .cs2-table-wrap { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  .cs2-table-title { font-family: var(--font-display); font-size: var(--fs-h2); margin-bottom: 1.25rem; }
+  .cs2-table { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .cs2-table__row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); font-size: var(--fs-body); }
+  .cs2-table__row:last-child { border-bottom: 0; }
+  .cs2-table__row--head { background: var(--surface); font-weight: 700; }
+  .cs2-table__metric { font-weight: 600; }
+  .cs2-table__before { color: var(--text-soft); }
+  .cs2-table__after { color: var(--accent-ink, var(--accent)); font-weight: 600; }
+
+  /* Teaser */
+  .cs2-teaser {
+    background: var(--text);
+    color: var(--bg);
+    padding: clamp(3rem, 8vw, 7rem) clamp(1.1rem, 4vw, 2.5rem);
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.5rem;
+  }
+  .cs2-teaser__eyebrow { font-size: var(--fs-eyebrow); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+  .cs2-teaser__title { font-family: var(--font-display); font-size: var(--fs-h1); color: var(--bg); text-decoration: none; max-width: 40ch; }
+  .cs2-teaser__title:hover { color: var(--bg); text-decoration: underline; }
+  .cs2-teaser__btn {
+    display: inline-flex; align-items: center; gap: 0.5em; font-size: var(--fs-body); font-weight: 600;
+    padding: 0.7em 1.4em; border-radius: 6px; background: var(--accent); color: #fff; text-decoration: none;
+  }
+  .cs2-teaser__btn:hover { color: #fff; opacity: 0.9; }
+</style>

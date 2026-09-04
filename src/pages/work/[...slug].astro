@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import CaseStudyLayout from '../../layouts/CaseStudyLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('work', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  return entries.map((entry, i) => {
+    const next = entries[i + 1];
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        next: next ? { slug: next.id, title: next.data.title } : null,
+      },
+    };
+  });
+}
+
+const { entry, next } = Astro.props;
+const d = entry.data;
+
+// Figma's simplified meta-grid (node 2018:3) always shows exactly 4 items:
+// an org/team anchor, Role, Timeline, and one outcome field. `minimal` mode
+// mirrors that count instead of stacking "Key result" on top of the usual
+// 4 fields as a 5th pill.
+const meta = d.minimal
+  ? [
+      { label: 'Team', value: d.team },
+      { label: 'Role', value: d.role },
+      { label: 'Timeline', value: d.timeline },
+      d.keyResult && !d.metaPreferFocus ? { label: 'Key result', value: d.keyResult } : { label: 'My focus', value: d.focus },
+    ]
+  : [
+      { label: 'Role', value: d.role },
+      { label: 'Timeline', value: d.timeline },
+      { label: 'Team', value: d.team },
+      { label: 'My focus', value: d.focus },
+      ...(d.keyResult ? [{ label: 'Key result', value: d.keyResult }] : []),
+    ];
+---
+
+<CaseStudyLayout
+  title={d.title}
+  subtitle={d.summary ?? d.hook}
+  tags={d.tags.slice(0, 4)}
+  accent={d.accent}
+  meta={meta}
+  links={d.links}
+  heroEmbed={d.heroEmbed}
+  heroVideo={d.heroVideo}
+  minimal={d.minimal}
+  challengeDescription={d.challengeDescription}
+  challengeLead={d.challengeLead}
+  challengeBody={d.challengeBody}
+  quote={d.quote}
+  quoteAttribution={d.quoteAttribution}
+  insightsDescription={d.insightsDescription}
+  insights={d.insights}
+  processDescription={d.processDescription}
+  processIntro={d.processIntro}
+  processEmbed={d.processEmbed}
+  hideSolution={d.hideSolution}
+  hideImpact={d.hideImpact}
+  iterations={d.iterations}
+  processShowcase={d.processShowcase}
+  solutionDescription={d.solutionDescription}
+  solutionEmbed={d.solutionEmbed}
+  solutionEmbedTitle={d.solutionEmbedTitle}
+  solutionEmbedCaption={d.solutionEmbedCaption}
+  solutionVideo={d.solutionVideo}
+  hideSolutionMock={d.hideSolutionMock}
+  overlayTag={d.overlayTag}
+  overlayTitle={d.overlayTitle}
+  overlayBody={d.overlayBody}
+  features={d.features}
+  solutionShowcase={d.solutionShowcase}
+  impactDescription={d.impactDescription}
+  kpis={d.kpis}
+  tableTitle={d.tableTitle}
+  tableRows={d.tableRows}
+  reflectionDescription={d.reflectionDescription}
+  reflectionLead={d.reflectionLead}
+  reflectionBody={d.reflectionBody}
+  nextProject={next ?? undefined}
+/>

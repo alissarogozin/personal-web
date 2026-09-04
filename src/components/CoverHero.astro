@@ -1,0 +1,250 @@
+---
+// Interactive cover hero: a purse at the bottom of the stage with real objects
+// that fan out of it in an arc on hover / focus / tap. Each object is a link to
+// the page section its nav tab points at.
+//
+// Assets come from the standardized set in images/ (every object centered on a
+// square canvas, longest side at 80% of it) via scripts/build_hero_assets.py.
+// Because that 0.8 fill ratio is identical across the four items, they need no
+// per-object size correction — one box size gives them all equal extent.
+// The trade-off is that each object floats inside its own padding, so the bag
+// needs the two constants noted in .cover__bag below.
+interface Props {
+  name: string;
+  tagline: string;
+}
+const { name, tagline } = Astro.props;
+
+// The whole rig is sized as a fraction of --hero-h so it scales as one piece.
+// Authored here in px against a 780px reference hero, then emitted as ratios —
+// CSS can't divide a length by a number to get a unitless scalar.
+const REF = 780;
+
+// Fan-out positions, ported from the Figma hero page frame (node 2019:199).
+//
+// Both files are matched on one scale via the bag: it is 552px tall in Figma and
+// 0.5 x --hero-h here, so 1 Figma px = 0.000906 x --hero-h. At that scale a
+// 300px Figma icon lands exactly on the 0.272 box size set in CSS below.
+//
+// Figma stacks the hero-section as: 70px padding, a 200px icon container, a 55px
+// gap, then the 552px bag — putting the bag's bottom 877px below the section's
+// top. Each tx/ty is an icon's center offset from that bag bottom-center, run
+// through the scale above and re-expressed against the REF hero. The two tilted
+// icons sit in rotation wrappers in Figma (381.326px and 355.818px bounding
+// boxes), so their true centers are the wrapper's center, not its left/top.
+// Listed left to right, arcing up and over the bag. `href` mirrors the nav tabs
+// — keep the two in step if either changes.
+const items = [
+  { label: 'About', href: '#about', src: '/assets/hero/polaroid.webp', tx: -366, ty: -1, rot: -19 },
+  { label: 'Work', href: '#work', src: '/assets/hero/macbook.webp', tx: -123, ty: -128, rot: 0 },
+  { label: 'Photography', href: '#photography', src: '/assets/hero/passport.webp', tx: 124, ty: -128, rot: 0 },
+  { label: 'Contact', href: '#contact', src: '/assets/hero/walkie-talkie.webp', tx: 350, ty: -1, rot: 12 },
+];
+---
+
+<section class="cover">
+  {/* Visually hidden, not deleted: the case-study pages carry their own h1,
+      and About's heading is an h2, so this stays the page's only h1 for
+      heading-hierarchy/SEO purposes even though it's off-screen. */}
+  <h1 class="sr-only">{tagline}</h1>
+  <div class="cover__stage">
+    {/* role="group" rather than role="img": the objects are real links now,
+        and role="img" would hide them from assistive tech. */}
+    <div class="cover__rig" role="group" aria-label={`${name} — ${tagline}`}>
+      {
+        items.map((it) => (
+          <a
+            class="cover__item"
+            href={it.href}
+            style={`--tx:${it.tx / REF}; --ty:${it.ty / REF}; --rot:${it.rot}deg;`}
+            title={it.label}
+            aria-label={it.label}
+          >
+            <img src={it.src} alt="" draggable="false" />
+          </a>
+        ))
+      }
+      <button class="cover__bag" type="button" aria-expanded="false" aria-label="Reveal sections">
+        <img src="/assets/hero/purse.webp" alt="" draggable="false" />
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --hero-h drives everything below: the bag is exactly half of it, and the
+     fan-out geometry scales with it, so the whole rig stays in proportion from
+     phone to desktop. Capped against viewport width as well as height so the
+     arc never runs off the sides. */
+  .cover {
+    /* Upper bounds are set by the fanned-out arc, not the bag: the outermost
+       icon boxes span 1.21 x --hero-h, so the vw cap keeps that inside the
+       section's padding on narrow screens, and the vh cap leaves the rig room
+       under the nav once the flex-end placement below has had its say. */
+    --hero-h: clamp(280px, min(80vh, 76vw), 900px);
+    /* Height of the sticky nav, so the stage can claim the rest of the first
+       screen. Keep in step with .nav__inner's min-height in Nav.astro. */
+    --nav-h: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    /* The hero owns the whole first screen below the nav, with the rig
+       centered in the space rather than resting on the bottom edge. svh (not
+       vh) so mobile browser chrome can't push About into view. */
+    min-height: calc(100svh - var(--nav-h));
+    justify-content: center;
+    /* Figma's hero-section is px-80 py-70. The 70px padding is the design's
+       minimum breathing room: the fanned-out icons overhang the rig's top by
+       0.091 x --hero-h, and each object sits inside 10% padding on its own
+       canvas, so the *visible* icon lands at 0.063 x --hero-h above the rig.
+       Anything past that comes from the flex centering above. */
+    padding-top: calc(var(--hero-h) * 0.063);
+    padding-bottom: calc(var(--hero-h) * 0.063 + clamp(0.5rem, 2vh, 2rem));
+    padding-inline: clamp(1.1rem, 4vw, 80px);
+  }
+
+  /* Standard visually-hidden clip: kept in the accessibility tree and out of
+     layout flow, so it doesn't fight the centered justify-content below. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .cover__stage {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Hover target for the reveal. Deliberately larger than the bag so the fan-out
+     doesn't flicker as the pointer travels out to an item. */
+  .cover__rig {
+    position: relative;
+    width: calc(var(--hero-h) * 1.19); /* Figma icon container, 1314px */
+    max-width: 100%;
+    /* Icon container + gap + bag = 200 + 55 + 552 = 807 Figma px. */
+    height: calc(var(--hero-h) * 0.731);
+  }
+
+  /* The bag: Figma's 837x552 purse box, centered horizontally and sitting on the
+     bottom edge of the stage. Its height is the anchor for the whole scale —
+     552 Figma px == 0.5 x --hero-h — so every other ratio here derives from it.
+     The button's own box is that crop window, so the transparent overflow
+     hanging below the stage can't swallow clicks meant for the next section. */
+  .cover__bag {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 2;
+    width: calc(var(--hero-h) * 0.758); /* 0.5 x 1.516 aspect (837/552) */
+    height: calc(var(--hero-h) * 0.5);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Figma treats the bag box as a crop window onto the purse's 1000x1000 canvas:
+     the image is w-119.47% / h-181.16% of the box at left -9.8% / top -40.58%.
+     Since the box is 552 Figma px tall, that puts the whole canvas at 0.906 x
+     --hero-h square, hanging 0.203 below the box's bottom edge. Horizontally
+     those offsets work out to dead center, so the translate below stands in. */
+  .cover__bag img {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--hero-h) * -0.203);
+    height: calc(var(--hero-h) * 0.906);
+    width: auto;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  /* Items start tucked inside the bag's mouth and fan out from there. */
+  .cover__item {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--hero-h) * 0.385); /* 300/780 */
+    /* Sized to match the Figma frame's icon-to-bag proportion (300px icon /
+       552px bag height ≈ 0.543 of the bag), scaled against the bag's own
+       0.5 x --hero-h height so the icons read at the same relative size as
+       in the design. At the 0.8 fill ratio of the source crop, the object
+       itself lands at ~0.218 of the hero. */
+    width: calc(var(--hero-h) * 0.272);
+    height: calc(var(--hero-h) * 0.272);
+    display: grid;
+    place-items: center;
+    /* Not clickable while hidden. Keyboard focus still reaches them, and
+       :focus-within on the rig reveals them, so tabbing works. */
+    pointer-events: none;
+    transform: translate(-50%, 0) scale(0.3) rotate(0deg);
+    opacity: 0;
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.3s ease;
+  }
+  .cover__item img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    filter: drop-shadow(0 6px 14px rgba(20, 18, 12, 0.22));
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease;
+  }
+  .cover__item:nth-child(2) { transition-delay: 0.04s; }
+  .cover__item:nth-child(3) { transition-delay: 0.08s; }
+  .cover__item:nth-child(4) { transition-delay: 0.12s; }
+
+  /* Lift the object itself on hover so the affordance reads without disturbing
+     the arc position held by the parent's transform. */
+  .cover__item:hover img,
+  .cover__item:focus-visible img {
+    transform: scale(1.08);
+    filter: drop-shadow(0 10px 20px rgba(20, 18, 12, 0.3));
+  }
+
+  /* Reveal on hover, keyboard focus, or when toggled open (touch) */
+  .cover__rig:hover .cover__item,
+  .cover__rig:focus-within .cover__item,
+  .cover__rig.is-open .cover__item {
+    pointer-events: auto;
+    transform: translate(calc(-50% + var(--tx) * var(--hero-h)), calc(var(--ty) * var(--hero-h)))
+      scale(1) rotate(var(--rot));
+    opacity: 1;
+  }
+  .cover__rig:hover .cover__bag,
+  .cover__rig:focus-within .cover__bag,
+  .cover__rig.is-open .cover__bag {
+    transform: translateX(-50%) translateY(6px) scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cover__item,
+    .cover__bag,
+    .cover__item img { transition: none; }
+  }
+</style>
+
+<script>
+  // Touch/click toggle so the reveal works without a hover-capable pointer.
+  document.querySelectorAll<HTMLButtonElement>('.cover__bag').forEach((btn) => {
+    const rig = btn.closest('.cover__rig');
+    if (!rig) return;
+    btn.addEventListener('click', () => {
+      const open = rig.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+</script>

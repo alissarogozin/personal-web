@@ -1,0 +1,83 @@
+---
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+// Root-relative hashes (/#work, not #work) so the tabs also work from the
+// case-study pages, where these sections don't exist.
+const links = [
+  { href: '/#about', label: 'About' },
+  { href: '/#work', label: 'Work' },
+  { href: '/#photography', label: 'Photography' },
+  { href: '/#contact', label: 'Contact', cta: true },
+];
+---
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a href="/" class="nav__brand">alissa&nbsp;rogozin</a>
+    <nav aria-label="Primary">
+      <ul class="nav__links">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                class={l.cta ? 'nav__cta' : undefined}
+                aria-current={isActive(l.href.replace('/#', '/')) ? 'page' : undefined}
+              >
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4rem;
+  }
+  .nav__brand {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.9rem, 3vw, 1.8rem);
+    list-style: none;
+    padding: 0;
+    font-size: var(--fs-body);
+    font-weight: 500;
+  }
+  .nav__links a {
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: color 0.16s;
+  }
+  .nav__links a:hover,
+  .nav__links a[aria-current='page'] { color: var(--text); }
+  .nav__cta {
+    border: 1px solid var(--border-strong);
+    padding: 0.4em 0.9em;
+    border-radius: 999px;
+  }
+  .nav__cta:hover { border-color: var(--accent); }
+</style>

@@ -1,0 +1,277 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import CoverHero from '../components/CoverHero.astro';
+import PhotoCollage from '../components/PhotoCollage.astro';
+
+const projects = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const currentlyUpTo = [
+  { tag: 'Work', title: 'UI/UX Co-op', meta: 'Emulate, Inc. Fall 2026' },
+  { tag: 'Previously', title: 'AI Ecosystem Intern', meta: 'Red Hat, Summer 2026' },
+  { tag: 'Current Obsessions', title: 'Yoga & Beli', meta: 'Beginner yogi, yet advanced foodie' },
+];
+
+const contactLinks = [
+  { tag: 'My Emails', title: 'rogozin.a@northeastern.edu', href: 'mailto:rogozin.a@northeastern.edu' },
+  { tag: 'My LinkedIn', title: 'alissa-rogozin', href: 'https://www.linkedin.com/in/alissa-rogozin/' },
+  { tag: 'My Resume', title: 'Click to view resume', href: 'https://docs.google.com/document/d/11QyTjZQ3m7CyIyM6tQtmPYjYpWTPYWldYLLkMWkWr1o/edit?usp=sharing' },
+  { tag: 'My Beli', title: '@alissarogozin :)', href: 'https://beliapp.co/app/alissarogozin' },
+
+];
+---
+
+<BaseLayout title="Alissa Rogozin">
+  <!-- Interactive cover hero -->
+  <div class="hero">
+    <CoverHero name="Alissa Rogozin" tagline="UX &amp; Product Designer" />
+  </div>
+
+  <!-- Sections run in nav order: About, Work, Photography, Contact. -->
+
+  <section id="about" class="about wrap">
+    <div class="about__inner">
+      <div class="about__text">
+        <!--<p class="eyebrow">About</p> -->
+        <h2 class="about__name">hey, i&rsquo;m alissa! </h2>
+        <p class="about__blurb">
+        Currently, I’m a rising senior studying <b>Computer Science & Design at Northeastern University </b> from <b> Boston, MA </b> and am an aspiring <b>Product Designer</b>. 
+        </p>
+        <p class="about__blurb">
+        I chose this path for <b>two reasons:</b> (1) I'm drawn to the innovation possible with technology, 
+        and (2) I'm endlessly curious about how people think, behave, and struggle with those innovations around them.
+        </p>
+        <p class="about__blurb">
+        While to some this may sound contradictory, I truly believe <b>technology never succeeds without prioritizing empathy of the user. </b> 
+        The best products aren't the ones with the most impressive code; they're the ones that make someone feel understood.
+        </p>
+         <p class="about__blurb">
+         That belief is what draws me to product design specifically. It sits right at the intersection of <b>how things work and 
+         how people feel </b> and I want to spend my career making sure those two things stay in conversation with each other.
+        </p>
+        <!-- <a class="btn btn--primary about__cta" href="mailto:rogozin.a@northeastern.edu">
+          Get in touch
+        </a> -->
+      </div>
+
+      <div class="about__portrait">
+        <img
+          src="/assets/about-polaroid.webp"
+          alt="Portrait of Alissa Rogozin, taped up like a photo print"
+          width="603"
+          height="800"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <div class="about__now">
+      <ul class="now-grid">
+        {
+          currentlyUpTo.map((n) => (
+            <li class="now-card">
+              <span class="now-card__tag tag">{n.tag}</span>
+              <p class="now-card__title">{n.title}</p>
+              <p class="now-card__meta">{n.meta}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Work -->
+  <section id="work" class="work wrap">
+    <div class="work__head">
+      <h2>My work</h2>
+      <p>Case studies selected across product design, research, and data.</p>
+    </div>
+    <div class="work__grid">
+      {
+        projects.map((p) => (
+          <ProjectCard
+            href={`/work/${p.id}`}
+            title={p.data.title}
+            hook={p.data.summary ?? p.data.hook}
+            timeline={p.data.timeline}
+            tags={p.data.tags}
+            accent={p.data.accent}
+            cover={p.data.cover}
+            coverAlt={p.data.coverAlt}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Photography — destination for the passport tab -->
+  <section id="photography" class="photography wrap">
+    <div class="photography__head">
+      <h2>Photography</h2>
+      <p>My love for traveling comes from its ability to make the world feel smaller. Whether its meeting new people or trying new cuisines, I will never take for granted the privilege of these experiences. </p>
+      <p> <b>Here's a look into some of my favorite travel destinations!</b> </p>
+    
+    </div>
+    <PhotoCollage />
+  </section>
+
+  <!-- Contact — destination for the walkie-talkie tab. Styled like the
+       "currently up to" cards in About for a consistent card language. -->
+  <section id="contact" class="contact wrap">
+    <div class="contact__head">
+      <h2>Contact</h2>
+      <p>The best ways to reach me.</p>
+    </div>
+    <div class="now-grid">
+      {
+        contactLinks.map((c) => (
+          <a class="now-card contact-card" href={c.href} target="_blank" rel="noopener noreferrer">
+            <span class="now-card__tag tag">{c.tag}</span>
+            <p class="now-card__title">{c.title}</p>
+            <p class="now-card__meta">{c.meta}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Full-bleed to match the Figma hero-section (w-full, px-80) — it carries its
+     own horizontal padding rather than sitting in the 68rem .wrap, so the
+     1314px icon container has the room the design gives it. */
+  .hero { margin-bottom: clamp(3rem, 8vw, 6rem); }
+
+  /* Narrower side margins than the site-wide .wrap, scoped to this page only
+     (case-study pages and the header/footer chrome keep the wider gutter). */
+  .about,
+  .work,
+  .photography,
+  .contact,
+  .placeholder {
+    padding-inline: clamp(0.9rem, 2.5vw, 1.5rem);
+  }
+
+  /* Same rhythm as .teaser / .placeholder now that Work sits between them. */
+  .work { margin-top: clamp(4rem, 9vw, 7rem); scroll-margin-top: 5rem; }
+  .work__head { margin-bottom: 2rem; }
+  .work__head h2 { font-size: var(--fs-h2); }
+  .work__head p { color: var(--text-soft); margin-top: 0.35rem; }
+  .work__grid {
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  }
+
+  /* Same rhythm as .work — a heading row above a full-width piece of content. */
+  .photography { margin-top: clamp(4rem, 9vw, 7rem); scroll-margin-top: 5rem; }
+  .photography__head { margin-bottom: 2rem; }
+  .photography__head h2 { font-size: var(--fs-h2); }
+  .photography__head p { color: var(--text-soft); margin-top: 0.35rem; }
+
+  /* Same rhythm as .work/.photography — a heading row above the content. */
+  .contact { margin-top: clamp(4rem, 9vw, 7rem); scroll-margin-top: 5rem; }
+  .contact__head { margin-bottom: 2rem; }
+  .contact__head h2 { font-size: var(--fs-h2); }
+  .contact__head p { color: var(--text-soft); margin-top: 0.35rem; }
+
+  /* now-card is a static <li> in About; here it doubles as a link, so this
+     just strips the anchor's default underline/color without touching the
+     shared hover lift. */
+  .contact-card { text-decoration: none; color: inherit; }
+
+  /* Placeholder sections: heading only, sized to leave a real landing area so
+     the smooth scroll has somewhere to come to rest. */
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 60vh;
+    margin-top: clamp(4rem, 9vw, 7rem);
+    scroll-margin-top: 5rem;
+  }
+  .placeholder h2 { font-size: var(--fs-h2); line-height: 1.05; }
+  .placeholder__link { font-size: var(--fs-h3); font-weight: 500; }
+
+  /* About: blurb on the left, the polaroid print on the right. scroll-margin-top
+     clears the sticky nav when the tab or the polaroid jumps here. */
+  .about { margin-top: clamp(4rem, 9vw, 7rem); scroll-margin-top: 5rem; }
+  .about__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.75rem, 5vw, 3.5rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: clamp(1.75rem, 5vw, 3rem);
+  }
+  @media (min-width: 46rem) {
+    .about__inner { flex-direction: row; align-items: center; }
+    .about__text { flex: 1; }
+  }
+
+  .about__name { font-size: var(--fs-h2); margin-top: 0.6rem; }
+  .about__blurb {
+    font-size: var(--fs-body);
+    line-height: 1.65;
+    color: var(--text-soft);
+    max-width: 62ch;
+    margin-top: 1rem;
+  }
+  .about__cta { margin-top: 1.5rem; }
+
+  /* The portrait is the same taped print that fans out of the bag in the hero,
+     so it carries its own edges and tape — no frame around it. The cut-out has
+     transparent margins, so a drop-shadow filter (not box-shadow) is what
+     follows the photo's actual silhouette. */
+  .about__portrait {
+    align-self: center;
+    flex-shrink: 0;
+  }
+  .about__portrait img {
+    display: block;
+    /* Width drives it; height follows the print's own 603x800 aspect. */
+    width: clamp(12rem, 27vw, 18rem);
+    height: auto;
+    filter: drop-shadow(0 8px 18px rgba(20, 18, 12, 0.22));
+  }
+
+  .about__now { margin-top: clamp(2rem, 5vw, 3rem); }
+  .about__now-head {
+    font-family: var(--font-display);
+    font-size: var(--fs-h3);
+    margin-bottom: 1rem;
+  }
+  .now-grid {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    list-style: none;
+    padding: 0;
+  }
+  .now-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.1rem 1.2rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  }
+  .now-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-strong);
+  }
+  .now-card__tag { align-self: flex-start; }
+  .now-card__title { font-family: var(--font-display); font-size: var(--fs-h3); margin-top: 0.15rem; }
+  .now-card__meta { color: var(--text-soft); font-size: var(--fs-caption); }
+</style>

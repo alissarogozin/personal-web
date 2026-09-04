@@ -1,0 +1,160 @@
+---
+title: Open Space & 311 Requests
+hook: More open space doesn't mean a more responsive city. Boston's most under-resourced neighborhoods lose on both fronts at once.
+summary: A data visualization project examining the relationship between open space access and city service responsiveness across Boston neighborhoods.
+role: Data Visualization + Researcher
+timeline: Spring 2026
+team: "Individual Class Project: ARTG 2242 Information Design Principles"
+focus: Using data analysis and data visualizations to communicate complex information to an audience.
+status: shipped
+order: 3
+accent: '#2b6ca3'
+tags: ['Data Visualization', 'Information Design', 'Storytelling']
+cover: /assets/open-space/cover.png
+coverAlt: Open Space & 311 Requests data visualization dashboard
+minimal: true
+heroEmbed: "https://www.canva.com/design/DAHG9Dvi1Qc/CS7Qa6bk24thT391d0uMYQ/view?embed"
+links:
+  - label: Open Space dataset
+    url: https://data.boston.gov/dataset/open-space
+  - label: 311 Service Requests dataset
+    url: https://data.boston.gov/dataset/311-service-requests
+
+challengeDescription: "Two civic datasets, and a hunch about who Boston's park investment actually serves."
+challengeLead: "My initial theory: wealthier neighborhoods get to reinvest in the parks that made them desirable in the first place, while under-resourced neighborhoods never get pulled into that same loop."
+challengeBody: "I paired two Analyze Boston datasets: Open Space, which maps every publicly designated park, playground, and protected green space in the city, and 311 Requests, a continuously updated log of every service request residents file, such as potholes, missed trash pickups, and broken streetlights, tracked by what, where, when, and whether it got resolved. On their own they're just civic records; I wanted to see whether together they told a connected story about equity."
+quote: "Is the distribution of resources getting better or worse over time, and where should attention and funding go next?"
+quoteAttribution: "Persona: Lindsey Matthews, Urban Planner"
+
+insightsDescription: "Three views built in Tableau, working from a citywide snapshot down to the neighborhood level."
+insights:
+  - tag: "The Core Finding"
+    title: "A nearly flat trendline"
+    body: "A scatter plot comparing open space per capita against 311 requests per capita, neighborhood by neighborhood, came out almost flat: a slope of roughly +0.04. Meaning, more open space didn't correlate with fewer service complaints."
+  - tag: "Reframe"
+    title: "Underserved on Both Fronts"
+    body: "I expected open space and service responsiveness to correlate in some way. Instead, the data suggested some neighborhoods are underserved on both, a more troubling story than the one I started with."
+  - tag: "Data quality"
+    title: "Messy Records & Inconsistent Data Quality"
+    body: "Inconsistent naming and a 311 system mid-restructuring meant I had to verify things I'd otherwise have assumed were reliable. Carefully wording the final insights was critical to not overstating certainty the data didn't support."
+
+processDescription: "Three phases: understand the raw data, visualize it every way that might reveal something, then communicate one honest story."
+processIntro: " "
+processShowcase: true
+iterations:
+  - title: "Phase 1: Understanding the Data"
+    caption: "Before building anything, I dug into the Open Space dataset (572 rows, 27 columns covering ownership, acreage, zoning, and protection status) and the 311 Service Request log, using Python scripts and Excel to check metadata, catch inconsistent naming, and confirm the data actually came from official municipal GIS records."
+    image: /assets/open-space/understanding-canvas.png
+    imageAlt: "Handwritten Data Visualization Canvas (Ciuccarelli, 2018) mapping context, user, purpose, and the message/engagement questions used to scope the open-space and 311 datasets before visualizing them"
+  - title: "Phase 2: Visualizing the Data"
+    caption: "I tested the cleaned data against different chart types, bubble clusters, a treemap, a decade-by-decade bar chart, a Sankey flow, in Tableau, RAWGraphs, and Kepler, to see which columns and rows actually paired well together and which gaps in city service were worth highlighting."
+    image: /assets/open-space/visualizing-collage.png
+    imageAlt: "Four exploratory charts: a decade-by-decade bar chart of park acquisitions, a treemap of green space by district, a bubble cluster comparing open-space types by neighborhood, and a Sankey diagram flowing from ownership to district to open-space type"
+  - title: "Phase 3: Communicating the Data"
+    caption: "The strongest findings became four neighborhood posters, each with a provocative headline ('122 Ignored,' 'Asks the Most, Gets the Least'), localized 311 stats, a 'What can you do?' call to action, and a QR code, designed for a park or bus stop, not a dashboard."
+    image: /assets/open-space/communicating-posters.png
+    imageAlt: "Four final neighborhood posters: Roslindale ('156 Wins, More Possible'), Fenway ('Your City Is Listening'), Dorchester ('Asks the Most, Gets the Least'), and Jamaica Plain ('122 Ignored'), each with localized 311 stats, community photos, and a QR code"
+
+solutionDescription: "A series of posters, each localized to one neighborhood's own numbers, placed where residents would actually see them."
+hideSolutionMock: true
+features:
+  - title: "Headlines pulled straight from each neighborhood's data"
+    body: "Roslindale's poster leads with '156 Wins, More Possible.' Dorchester's reads 'Asks the Most, Gets the Least,' a direct nod to the flat scatter-plot trendline. Jamaica Plain's is blunter: '122 Ignored.'"
+  - title: "Citywide context to give the local numbers weight"
+    body: "Parking enforcement was the single largest 311 complaint category citywide, at over 63,000 requests, followed by street cleaning, improper trash storage, and pothole repairs. Under-resourced neighborhoods carry a heavier share of these overall."
+
+solutionShowcase:
+  - title: "An Interactive Dashboard"
+    caption: "Four linked views (KPI cards, a choropleth map, the open-space-vs-311 scatter plot, and paired bar charts) built in Tableau so a viewer can trace one neighborhood's whole story, hovering it highlights that neighborhood across every view at once, without losing the citywide picture around it."
+    image: /assets/open-space/dashboard.png
+    imageAlt: "The Tableau dashboard: KPI cards for total 311 requests and on-time resolution rate, a choropleth map of open-space acreage by neighborhood, a scatter plot of open space vs. 311 requests per capita, and paired bar charts of total open space and 311 requests per neighborhood"
+  - title: "Designed for a Community, not a Classroom"
+    caption: "Mocked up in the places residents already pass through, a bus stop, a street-corner, a lamppost wrap, the posters are meant to put civic data in front of people who would never open a dashboard, and let a QR code carry anyone curious the rest of the way."
+    images:
+      - src: /assets/open-space/poster-fenway-busstop.png
+        alt: "Fenway poster reading 'Your City Is Listening' mocked up on a bus-shelter ad panel"
+      - src: /assets/open-space/poster-dorchester-kiosk.png
+        alt: "Dorchester poster reading 'Asks the Most, Gets the Least' mocked up on a street kiosk"
+      - src: /assets/open-space/poster-roslindale-pillar.png
+        alt: "Roslindale poster reading '156 Wins, More Possible' mocked up on a street pillar"
+
+hideImpact: true
+impactDescription: "Measured from the full Analyze Boston 311 and Open Space datasets for the period analyzed."
+kpis:
+  - value: "50,265"
+    label: "Total 311 requests"
+    body: "Across the full dataset analyzed, with Public Works as the most common responding department."
+  - value: "70.5%"
+    label: "Requests resolved on time"
+    body: "Citywide on-time resolution rate: a city that's mostly functional, but not everywhere."
+  - value: "+0.04"
+    label: "Slope: open space vs. 311 requests per capita"
+    body: "A near-flat trendline: the core finding that more green space doesn't predict fewer service complaints."
+
+reflectionDescription: "What working with real civic data, instead of a clean sample set, taught me about honest storytelling."
+reflectionLead: "Data Can Tell Many Stories"
+reflectionBody: "This was my first data visualization project, and it taught me that the hardest work happens before you touch a chart tool: understanding messy civic data and figuring out what story it can honestly support. The flat scatter-plot trendline reshaped my entire approach, pushing me toward a more nuanced finding than my initial theory predicted, and taught me to communicate that honestly rather than overstating certainty for a cleaner narrative. Translating the Tableau dashboard into neighborhood posters also pushed me to design for a very different audience, someone passing a bus stop with five seconds to spare, not a dashboard user with five minutes. This project showed me that data visualization is as much an exercise in editorial judgment as it is in technical execution."
+---
+
+{/*
+  The case-study page renders from the frontmatter fields above (see
+  src/layouts/CaseStudyLayout.astro) — this body is not displayed. Content
+  above is drawn from your Case Study Templates PDF (Data Visualization —
+  ARTG2242).
+
+  Not yet in that source — fill in and the layout will pick these up
+  automatically once set:
+  - tableTitle / tableRows — the source has strong per-neighborhood numbers
+    (e.g. Dorchester's 1,435 requests, Roslindale's "156 Wins") but no
+    single before/after comparison, which is what that table is built for;
+    add one if you have a clean metric for it, otherwise leave it out
+  - a conclusion for the project — the source notes end at the posters
+    without a wrap-up
+
+  Original scaffold notes preserved below.
+
+## Context
+
+An individual data-visualization project focused on **open space** — taking a dataset and turning it into a clear, well-argued visual story for a specific audience.
+
+> [TODO] One–two sentences: what is the "open space" dataset about (urban green space, land use, access, …), and who was the intended audience for the communication?
+
+## The problem
+
+> [TODO] What question was the visualization trying to answer, or what did the audience misunderstand / not see in the raw data? Why does it matter?
+
+## My role
+
+Sole designer — I owned the data analysis, the visualization design, and the final communication deliverable.
+
+## Process
+
+> [TODO] 3–4 key moments:
+> - what you found in the data that shaped the story
+> - visual directions you explored (chart types, framing) and why you diverged
+> - the design decision that mattered most (encoding, hierarchy, annotation)
+
+<Figure placeholder="Exploratory charts / drafts (add exports)" wide />
+
+## The solution
+
+> [TODO] Describe the final piece in plain language, then show it.
+
+<Figure placeholder="Final visualization(s) from the deck" wide />
+
+### Design decisions and why
+
+> [TODO] 2–3 specific choices — chart type, color/encoding, annotation, sequence — each framed as "I chose X over Y because Z." This is where data-viz craft shows.
+
+## Outcome
+
+> [TODO] How was the deliverable received? What did the visualization make clear that the raw data didn't? One honest "what I'd change."
+
+## Reflection
+
+> [TODO] 2–3 sentences on what this says about how you communicate with data.
+
+---
+
+*Tip: when you have the final charts, this is a strong project to make fully visuals-forward — lead with the imagery and keep the prose lean.*
+*/}

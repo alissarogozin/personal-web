@@ -1,0 +1,49 @@
+<h2 class="sr-only">Wireframe of a portfolio cover page with a navigation bar, an interactive bag hero section, name and tagline, and a footer</h2>
+
+<div style="background:var(--surface-1);border-radius:12px;padding:1.25rem;">
+
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:0.5px solid var(--border);margin-bottom:20px;">
+  <span style="font-size:14px;font-weight:500;color:var(--text-primary);">your name</span>
+  <div style="display:flex;gap:16px;font-size:13px;color:var(--text-secondary);">
+    <span>about</span><span>contact</span><span>resume</span>
+  </div>
+</div>
+
+<div style="position:relative;height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface-2);border-radius:12px;margin-bottom:16px;" class="bag-wrap">
+
+  <div class="item" style="position:absolute;left:50%;top:44%;width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;transition:transform 0.4s var(--ease-out,ease-out),opacity 0.3s;transform:translate(-50%,-50%) scale(0.5);opacity:0;--tx:-110px;--ty:-55px;">
+    <i class="ti ti-camera" style="font-size:18px;color:var(--text-secondary);" aria-hidden="true"></i>
+  </div>
+  <div class="item" style="position:absolute;left:50%;top:44%;width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;transition:transform 0.4s var(--ease-out,ease-out) 0.05s,opacity 0.3s 0.05s;transform:translate(-50%,-50%) scale(0.5);opacity:0;--tx:-45px;--ty:-95px;">
+    <i class="ti ti-book" style="font-size:18px;color:var(--text-secondary);" aria-hidden="true"></i>
+  </div>
+  <div class="item" style="position:absolute;left:50%;top:44%;width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;transition:transform 0.4s var(--ease-out,ease-out) 0.1s,opacity 0.3s 0.1s;transform:translate(-50%,-50%) scale(0.5);opacity:0;--tx:30px;--ty:-100px;">
+    <i class="ti ti-plant" style="font-size:18px;color:var(--text-secondary);" aria-hidden="true"></i>
+  </div>
+  <div class="item" style="position:absolute;left:50%;top:44%;width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;transition:transform 0.4s var(--ease-out,ease-out) 0.15s,opacity 0.3s 0.15s;transform:translate(-50%,-50%) scale(0.5);opacity:0;--tx:95px;--ty:-70px;">
+    <i class="ti ti-coffee" style="font-size:18px;color:var(--text-secondary);" aria-hidden="true"></i>
+  </div>
+  <div class="item" style="position:absolute;left:50%;top:44%;width:40px;height:40px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;transition:transform 0.4s var(--ease-out,ease-out) 0.2s,opacity 0.3s 0.2s;transform:translate(-50%,-50%) scale(0.5);opacity:0;--tx:130px;--ty:-15px;">
+    <i class="ti ti-headphones" style="font-size:18px;color:var(--text-secondary);" aria-hidden="true"></i>
+  </div>
+
+  <i class="ti ti-briefcase" style="font-size:56px;color:var(--text-primary);position:relative;z-index:2;" aria-hidden="true"></i>
+
+  <p style="font-family:var(--font-voice);font-size:22px;margin:12px 0 4px;color:var(--text-primary);">your name</p>
+  <p style="font-size:13px;color:var(--text-secondary);margin:0 0 8px;">product designer crafting thoughtful experiences</p>
+  <p style="font-size:12px;color:var(--text-muted);margin:0;">hover to explore</p>
+</div>
+
+<div style="display:flex;justify-content:space-between;padding-top:12px;border-top:0.5px solid var(--border);font-size:12px;color:var(--text-muted);">
+  <span>contact@email.com</span>
+  <span>linkedin</span>
+</div>
+
+</div>
+
+<style>
+.bag-wrap:hover .item{
+  transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1) !important;
+  opacity:1 !important;
+}
+</style>
