@@ -1,12 +1,13 @@
 ---
 title: AI Literacy Curriculum
 hook: Kids already use AI, but few know how to think about it. A middle-school curriculum that teaches healthy skepticism instead of blind trust.
-summary: A modular AI literacy curriculum for grades 5 - 8 that teaches students to recognize hallucinations, bias, and sycophancy through hands-on activities.
-role: Designer & co-creator (with Alexi Lee)
+summary: An AI literacy curriculum for grades 5 - 8 that teaches students to recognize hallucinations, bias, and sycophancy in AI through hands-on activities.
+role: AI Designer & Researcher
 timeline: Spring 2026
-team: Two designers (Alexi Lee & me), guided by work from the MIT Media Lab (Blakeley H. Payne)
+team: "Group Project: ARTG 5000 Designing AI for Education"
 focus: Curriculum concept, activity design, interactive prototype, and teacher validation.
 keyResult: Teachers found it "engaging and directly applicable," and reshaped it through preliminary validation.
+metaPreferFocus: true
 status: live
 order: 4
 accent: '#7a4fd0'
@@ -14,11 +15,11 @@ tags: ['EdTech', 'AI Ethics', 'Prototyping', 'Research']
 cover: /assets/ai-literacy/cover.png
 coverAlt: AI Literacy Curriculum activity screens
 minimal: true
+heroImage: /assets/ai-literacy/hero.png
+heroImageAlt: "AI Literacy: 5-8 curriculum platform shown across three screens: the landing/signup page, the lesson-plan builder with grade range, time, difficulty, and classroom tech filters, and a generated Identifying Bias lesson plan"
 links:
-  - label: Try the prototype
-    url: https://alxilee.github.io/ai-literacy-prototype/
   - label: View the curriculum deck
-    url: /assets/ai-literacy/curriculum-deck.pdf
+    url: https://drive.google.com/file/d/1TLxWh4Jm-rS32Oh8hWXZ9k0lAXdQnEx_/view
 
 challengeDescription: "The gap between how much middle schoolers already use AI and how little they've been taught to question it."
 challengeLead: "Middle schoolers use AI every day to write essays, answer questions, generate images, and get recommendations, but almost none have been taught to question it."
@@ -29,44 +30,37 @@ quoteAttribution: "Marlene Goncalves, 7th grade English teacher"
 insightsDescription: "Grounded in a well-known curriculum from MIT Media Lab, then reframed after real teacher interviews."
 insights:
   - tag: "Reframe"
-    title: "A tool, not a mirror of society"
-    body: "The MIT Media Lab curriculum we used as a starting point frames AI mainly as a socio-political artifact: who built it, who it harms. That framing matters, but students don't yet know how to use AI well or why it fails them when it does. We built the practical foundation first: how do I use AI well, and why shouldn't I blindly trust it?"
+    title: "Competetive Analysis"
+    body: "We benchmarked our approach against the MIT AI Ethics Education Curriculum, the leading framework in this space. MIT focuses on whether AI is fair, emphasizing bias in recommendation systems and facial recognition. We identified a gap: kids don't know how to use AI well, or why it fails them, which became our core differentiator."
   - tag: "Design goal"
-    title: "Skepticism as the outcome, not a side effect"
-    body: "We wanted students to leave with genuine skepticism they'd seen happen firsthand, a sense of control (AI responds to how you prompt it, and it was built by people who made deliberate choices), and the confidence to push back on anything presenting itself as authoritative without earning it."
+    title: "User Validation"
+    body: "Preliminary validations with two middle school teachers was done to stress-test the activities before scaling further. Feedback surfaced issues around pacing, handling sensitive topics like bias, and adapting to non-traditional classroom formats."
   - tag: "Teacher feedback"
-    title: "The personal connection is what makes bias land"
-    body: "Michael Kim, a math teacher working in a 1:1 setting, said comparing an AI output to someone you actually know makes the gap feel real instead of distant. He flagged that the discussion questions needed adjusting for a one-on-one format rather than a full classroom."
+    title: "Key takeaway"
+    body: "Across validations, teachers wanted a curriculum tailored to their specific classroom, not a rigid, one-size-fits-all package. This finding directly shaped the design decisions that follow."
 
-processDescription: "Three modular, single-class-period activities, built so a teacher with no technical background could run them without extra prep."
-processIntro: "Descriptive Prompting has students write step-by-step instructions for instant ramen, which the teacher then follows hyper-literally: 'boil the water' causes a freeze, and 'add the seasoning' gets the sealed packet dropped straight into the cup, making the point before we ever say it aloud. Identifying Bias asks students to picture a real person they know in a professional role, then prompt an image generator with just the job title, so the gap between the real person and the stereotype feels concrete instead of abstract. Fact-Checking AI uses two secretly different chatbots we built in Playlab, one always confident even when wrong and one that always agrees with the user, and has students name the pattern themselves before we ever introduce the words hallucination or sycophancy."
+processDescription: "Three phases: decide what the curriculum wasn't, prototype with real AI tools, then stress-test it with teachers."
+processIntro: " "
+processShowcase: true
 iterations:
-  - title: "The three core activities"
-    caption: "Descriptive Prompting (ramen instructions), Identifying Bias (image generator vs. a real person), and Fact-Checking AI (two secretly flawed Playlab chatbots), each built around a single class period."
-  - title: "Teacher interviews"
-    caption: "Michael Kim and Marlene Goncalves each ran the activities and reshaped how we scoped them. See Discovery & Insights and Reflections."
+  - title: "Phase 1: Curriculum Decisions"
+    caption: "Before designing individual activities, we had to decide what this curriculum was not: not a computer science course, not an AI-for-productivity guide, not a fear-mongering cautionary tale. Anchoring on three core goals, precision drives output, AI isn't all-knowing, and AI is moldable, gave every activity a clear filter to design against."
+  - title: "Phase 2: Playing Around with AI Tools"
+    caption: "To make abstract concepts tangible, we prototyped activities using tools students already interact with, like AI image generators and Playlab, a no-code chatbot builder. This let us test how far we could push a concept like hallucination or sycophancy into something hands-on. Instead of explaining what bias is, we built an activity where students compare an AI-generated image of \"a doctor\" to someone they actually know."
+  - title: "Phase 3: Teacher Validation"
+    caption: "We conducted interviews with middle school teachers to see where the design held up and where it broke. Feedback on pacing, sensitive topics, and classroom format directly shaped revisions, turning a fixed curriculum into something built to flex around how teachers actually teach."
 
 solutionDescription: "Three hands-on activities, plus a lightweight tool that recommends which one to run."
-overlayTag: "Core feature"
-overlayTitle: "A recommender for teachers with no prep time"
-overlayBody: "A teacher inputs their grade range, available time, classroom tech access, class size, and students' prior AI exposure, and gets a recommended activity pulled from the curriculum automatically."
+solutionEmbed: "https://alxilee.github.io/ai-literacy-prototype/"
+solutionEmbedTitle: "Interactive Prototype"
+solutionEmbedCaption: "Descriptive Prompting, Identifying Bias, and Fact-Checking AI, live and clickable."
 features:
   - title: "Fact-Checking AI"
     body: "Two secretly different Playlab chatbots: one always sounds confident even when wrong, the other always agrees with the user. Students interrogate both like detectives before we introduce the terms hallucination or sycophancy, then rewrite the bot's instructions and test whether their fix actually made it more honest."
   - title: "Identifying Bias"
     body: "Students think of a real person they know in a professional role, then prompt an AI image generator with just the job title, comparing the output to someone they actually know instead of a stranger's face flattened into a stereotype."
 
-impactDescription: "Preliminary, qualitative validation with two practicing teachers, not a classroom pilot with students yet."
-kpis:
-  - value: "00%"
-    label: "Lorem ipsum label"
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
-  - value: "0.0x"
-    label: "Lorem ipsum label"
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
-  - value: "00%"
-    label: "Lorem ipsum label"
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod."
+hideImpact: true
 
 reflectionDescription: "What teacher validation surfaced about the curriculum's real boundaries."
 reflectionLead: "We built this to teach skepticism toward AI specifically, but some of the discussions it opens are bigger than AI. The curriculum needs to hand teachers the scaffolding to hold that conversation responsibly."

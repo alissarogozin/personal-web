@@ -21,7 +21,7 @@
   --accent-soft: #e8edf9;
   --accent-ink: #1c3a80;
 
-  --maxw: 68rem;
+  --maxw: 74.8rem;
   --maxw-prose: 42rem;
   --radius: 14px;
   --radius-sm: 8px;
@@ -99,7 +99,7 @@ h3, h4 { font-size: var(--fs-h3); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
 
 /* ============================================================ Layout ====== */
-.wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(1.1rem, 4vw, 2.5rem); }
+.wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: clamp(1.1rem, 4vw, 80px); }
 .prose { max-width: var(--maxw-prose); }
 
 .eyebrow {

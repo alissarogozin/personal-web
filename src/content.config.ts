@@ -40,11 +40,17 @@ const work = defineCollection({
     // shows placeholder image slots (see CaseStudyLayout).
     cover: z.string().optional(),
     coverAlt: z.string().optional(),
+    // Static image under /public shown in the case-study hero in place of the
+    // placeholder image box. Lowest priority of the three hero media options.
+    heroImage: z.string().optional(),
+    heroImageAlt: z.string().optional(),
     // Embeddable slide/deck URL (e.g. a Canva "view?embed" link) shown in the
-    // case-study hero in place of the placeholder image box.
+    // case-study hero in place of the placeholder image box. Takes priority
+    // over heroImage.
     heroEmbed: z.string().optional(),
     // Video (e.g. an .mp4 under /public) shown muted/looping in the hero in
-    // place of the placeholder image or heroEmbed. Takes priority over both.
+    // place of the placeholder image, heroEmbed, or heroImage. Takes priority
+    // over all of them.
     heroVideo: z.string().optional(),
     // Opt into the pared-down section layout from the Figma "case-study-page"
     // frame (node 2018:3): no per-section description line, no challenge
@@ -73,6 +79,10 @@ const work = defineCollection({
 
     processDescription: z.string().optional(),
     processIntro: z.string().optional(),
+    // Small caveat line shown under the Design Process section head (e.g.
+    // explaining why no Solution section follows) — see CaseStudyLayout's
+    // `processNote` prop.
+    processNote: z.string().optional(),
     // Optional embed (e.g. a slide deck PDF under /public) shown beside the
     // process write-up. When set, CaseStudyLayout widens that section's
     // sidebar column to make it legible — see CaseStudyLayout's
@@ -87,6 +97,12 @@ const work = defineCollection({
           // dashed placeholder box when omitted.
           image: z.string().optional(),
           imageAlt: z.string().optional(),
+          // Alternative to `image`: multiple separate photos shown as a
+          // loose, mismatched-size collage — see solutionShowcase's `images`
+          // and CaseStudyLayout's `.cs2-showcase__collage`.
+          images: z
+            .array(z.object({ src: z.string(), alt: z.string().optional() }))
+            .optional(),
         }),
       )
       .default([]),

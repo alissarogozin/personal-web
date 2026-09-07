@@ -27,6 +27,10 @@ interface Props {
   // row of pill links below the meta grid.
   links?: Link[];
   heroEmbed?: string;
+  // Static image shown in place of the placeholder box. Takes priority over
+  // the placeholder, but below heroEmbed and heroVideo.
+  heroImage?: string;
+  heroImageAlt?: string;
   // Muted, looping video shown in place of the hero image/embed. Takes
   // priority over both heroEmbed and the placeholder.
   heroVideo?: string;
@@ -47,6 +51,10 @@ interface Props {
 
   processDescription?: string;
   processIntro?: string;
+  // Small caveat line shown under the Design Process section head — e.g.
+  // explaining an internal-only tool that can't be shown in the Solution
+  // section that would otherwise follow.
+  processNote?: string;
   // Optional slide-deck embed (e.g. a PDF under /public) shown in the
   // process sidebar. When set, that section's sidebar column widens from
   // the usual 20rem to make the embed legible — see `.cs2-split--wide`.
@@ -63,8 +71,10 @@ interface Props {
   // and renumber the sections after it up. See content.config.ts.
   hideSolution?: boolean;
   solutionDescription?: string;
-  // Interactive Figma prototype shown in place of the mockup placeholder,
-  // with a caption labeling which flow it is (e.g. "Admin View: ...").
+  // Interactive prototype shown in place of the mockup placeholder, with a
+  // caption labeling which flow it is (e.g. "Admin View: ..."). A Figma URL
+  // gets wrapped in Figma's own embed proxy; any other URL (a live deployed
+  // prototype) is iframed directly.
   solutionEmbed?: string;
   solutionEmbedTitle?: string;
   solutionEmbedCaption?: string;
@@ -100,10 +110,10 @@ interface Props {
 }
 
 const {
-  title, subtitle, tags = [], accent, meta, links = [], heroEmbed, heroVideo, minimal = false,
+  title, subtitle, tags = [], accent, meta, links = [], heroEmbed, heroImage, heroImageAlt, heroVideo, minimal = false,
   challengeDescription, challengeLead, challengeBody, quote, quoteAttribution,
   insightsDescription, insights = [],
-  processDescription, processIntro, processEmbed, iterations = [], processShowcase: forceShowcase = false,
+  processDescription, processIntro, processNote, processEmbed, iterations = [], processShowcase: forceShowcase = false,
   hideSolution = false, solutionDescription, solutionEmbed, solutionEmbedTitle, solutionEmbedCaption, solutionVideo, hideSolutionMock = false, overlayTag, overlayTitle, overlayBody, features = [], solutionShowcase = [],
   hideImpact = false, impactDescription, kpis = [], tableTitle, tableRows = [],
   reflectionDescription, reflectionLead, reflectionBody,
@@ -123,7 +133,13 @@ const hasProcess = Boolean(processDescription || processIntro) || iterations.len
 // 20rem sidebar for a full-width, alternating image/text layout instead.
 const processShowcase = forceShowcase || iterations.some((it) => it.image);
 const hasSolution = !hideSolution && (Boolean(solutionDescription || solutionEmbed || solutionVideo || overlayTag || overlayTitle || overlayBody) || features.length > 0);
-const solutionEmbedUrl = solutionEmbed ? `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(solutionEmbed)}` : undefined;
+// Figma links need wrapping in Figma's own embed proxy; any other URL (a
+// live deployed prototype, e.g.) is already iframe-able on its own.
+const solutionEmbedUrl = solutionEmbed
+  ? solutionEmbed.includes('figma.com')
+    ? `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(solutionEmbed)}`
+    : solutionEmbed
+  : undefined;
 const hasImpact = !hideImpact && (Boolean(impactDescription) || kpis.length > 0 || tableRows.length > 0);
 const hasReflection = Boolean(reflectionDescription || reflectionLead || reflectionBody);
 
@@ -206,6 +222,10 @@ const numReflection = hasReflection ? nextNum() : null;
               title={`${title} — presentation`}
             />
           </div>
+        ) : heroImage ? (
+          <div class="cs2-hero__image cs2-hero__image--real">
+            <img src={heroImage} alt={heroImageAlt ?? `${title} — cover`} loading="eager" />
+          </div>
         ) : (
           <div class="cs2-placeholder cs2-hero__image">
             <span>[Hero image — a wide, high-quality shot of the finished product or key screen in context]</span>
@@ -227,7 +247,7 @@ const numReflection = hasReflection ? nextNum() : null;
           </div>
           <div class="cs2-split__body">
             <p class="cs2-lead">{challengeLead ?? '[Lead sentence — the sharpest, most concrete statement of the problem, in plain language]'}</p>
-            <p class="cs2-p">{challengeBody ?? '[2–4 sentences of supporting context: who is affected, what’s broken today, and why it matters. Include a concrete number or detail if you have one.]'}</p>
+            <p class="cs2-p" set:html={challengeBody ?? '[2–4 sentences of supporting context: who is affected, what’s broken today, and why it matters. Include a concrete number or detail if you have one.]'} />
             {
               !minimal && (
                 <blockquote class="cs2-quote">
@@ -287,24 +307,37 @@ const numReflection = hasReflection ? nextNum() : null;
             <div>
               <h2 class="cs2-h2">Design Process</h2>
               {!minimal && <p class="cs2-desc">{processDescription ?? '[One sentence describing the arc of your process — e.g. from messy inputs to a simple, validated direction]'}</p>}
+              {processNote && <p class="cs2-process-note">{processNote}</p>}
             </div>
           </div>
-          {processIntro && <p class="cs2-p cs2-showcase__intro">{processIntro}</p>}
+          {processIntro && <p class="cs2-p cs2-showcase__intro" set:html={processIntro} />}
           <div class="cs2-showcase">
             {
               iterations.map((it) => (
                 <div class="cs2-showcase__item">
-                  <div class="cs2-showcase__media">
-                    {
-                      it.image ? (
-                        <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
-                      ) : (
-                        <div class="cs2-placeholder cs2-iter__placeholder">
-                          <span>[Screenshot or photo — {it.title}]</span>
-                        </div>
-                      )
-                    }
-                  </div>
+                  {
+                    it.images && it.images.length > 0 ? (
+                      <div class="cs2-showcase__collage">
+                        {
+                          it.images.map((img) => (
+                            <img src={img.src} alt={img.alt ?? it.title} loading="lazy" />
+                          ))
+                        }
+                      </div>
+                    ) : (
+                      <div class="cs2-showcase__media">
+                        {
+                          it.image ? (
+                            <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
+                          ) : (
+                            <div class="cs2-placeholder cs2-iter__placeholder">
+                              <span>[Screenshot or photo — {it.title}]</span>
+                            </div>
+                          )
+                        }
+                      </div>
+                    )
+                  }
                   <div class="cs2-showcase__text">
                     <p class="cs2-showcase__title">{it.title}</p>
                     <p class="cs2-showcase__caption">{it.caption}</p>
@@ -326,6 +359,7 @@ const numReflection = hasReflection ? nextNum() : null;
             <div>
               <h2 class="cs2-h2">Design Process</h2>
               {!minimal && <p class="cs2-desc">{processDescription ?? '[One sentence describing the arc of your process — e.g. from messy inputs to a simple, validated direction]'}</p>}
+              {processNote && <p class="cs2-process-note">{processNote}</p>}
             </div>
           </div>
           <div class="cs2-split__body">
@@ -342,7 +376,7 @@ const numReflection = hasReflection ? nextNum() : null;
                 <Fragment>
                   {
                     processIntro ? (
-                      <p class="cs2-p">{processIntro}</p>
+                      <p class="cs2-p" set:html={processIntro} />
                     ) : iterations.length === 0 ? (
                       <p class="cs2-p">[A paragraph: the directions you considered, the constraints that mattered, and the decision that shaped everything downstream]</p>
                     ) : null
@@ -595,11 +629,13 @@ const numReflection = hasReflection ? nextNum() : null;
 <style>
   .cs2-band { padding-block: clamp(3rem, 7vw, 6.25rem); }
   .cs2-band--elev { background: var(--bg-elev); }
-  /* Gap below the Reflections white band (not padding inside it) so the
-     page's base background shows through as a visible edge before the next
-     section (or the dark teaser band, when there's no next project),
-     instead of the white band bleeding straight into it. */
-  .cs2-band--reflection { margin-bottom: clamp(2rem, 5vw, 4rem); }
+  /* Gap above and below the Reflections band (not padding inside it) so the
+     page's base background shows through as a visible seam on both sides —
+     above, so it reads as its own section instead of fusing with whatever
+     equally-elevated band precedes it (Impact normally, but Design Process
+     when Solution/Impact are hidden); below, before the next section (or
+     the dark teaser band, when there's no next project). */
+  .cs2-band--reflection { margin-top: clamp(2rem, 5vw, 4rem); margin-bottom: clamp(2rem, 5vw, 4rem); }
 
   .cs2-back { font-size: var(--fs-body); font-weight: 600; text-decoration: none; color: var(--text-soft); }
   .cs2-back:hover { color: var(--accent); }
@@ -654,6 +690,11 @@ const numReflection = hasReflection ? nextNum() : null;
   .cs2-links__item { font-size: var(--fs-body); font-weight: 600; color: var(--accent-ink, var(--accent)); text-decoration: none; }
   .cs2-links__item:hover { text-decoration: underline; }
   .cs2-hero__image { margin-top: clamp(2rem, 4vw, 2.5rem); aspect-ratio: 16 / 7; }
+  .cs2-hero__image--real {
+    border: 0; padding: 0; background: none;
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .cs2-hero__image--real img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
   /* Canva's embed iframe carries its own 16:9-ish ratio via padding-top on the
      official embed snippet; matching that here (rather than the 16/7 of the
@@ -697,6 +738,7 @@ const numReflection = hasReflection ? nextNum() : null;
   .cs2-num { font-family: var(--font-display); font-size: var(--fs-h1); line-height: 0.9; color: var(--accent); }
   .cs2-h2 { font-size: var(--fs-h2); }
   .cs2-desc { color: var(--text-soft); font-size: var(--fs-body); margin-top: 0.4rem; max-width: 42ch; }
+  .cs2-process-note { color: var(--text-faint); font-size: var(--fs-caption); font-style: italic; margin-top: 0.6rem; max-width: 42ch; }
 
   .cs2-split { display: grid; gap: clamp(2rem, 5vw, 4rem); }
   .cs2-split__head { display: flex; gap: clamp(1.25rem, 3vw, 2.5rem); padding-bottom: clamp(1.5rem, 3vw, 2rem); border-bottom: 1px solid var(--border); align-items: baseline; }
@@ -850,6 +892,8 @@ const numReflection = hasReflection ? nextNum() : null;
      height, since there's no interactive canvas that needs the room. */
   .cs2-bigmock__video {
     aspect-ratio: 1600 / 1004;
+    width: 55%;
+    margin-inline: auto;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
