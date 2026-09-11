@@ -324,19 +324,11 @@ const numReflection = hasReflection ? nextNum() : null;
                           ))
                         }
                       </div>
-                    ) : (
+                    ) : it.image ? (
                       <div class="cs2-showcase__media">
-                        {
-                          it.image ? (
-                            <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
-                          ) : (
-                            <div class="cs2-placeholder cs2-iter__placeholder">
-                              <span>[Screenshot or photo — {it.title}]</span>
-                            </div>
-                          )
-                        }
+                        <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
                       </div>
-                    )
+                    ) : null
                   }
                   <div class="cs2-showcase__text">
                     <p class="cs2-showcase__title">{it.title}</p>
@@ -511,19 +503,11 @@ const numReflection = hasReflection ? nextNum() : null;
                               ))
                             }
                           </div>
-                        ) : (
+                        ) : it.image ? (
                           <div class="cs2-showcase__media">
-                            {
-                              it.image ? (
-                                <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
-                              ) : (
-                                <div class="cs2-placeholder cs2-iter__placeholder">
-                                  <span>[Screenshot or photo — {it.title}]</span>
-                                </div>
-                              )
-                            }
+                            <img src={it.image} alt={it.imageAlt ?? it.title} loading="lazy" />
                           </div>
-                        )
+                        ) : null
                       }
                       <div class="cs2-showcase__text">
                         <p class="cs2-showcase__title">{it.title}</p>
@@ -844,13 +828,23 @@ const numReflection = hasReflection ? nextNum() : null;
      of a single `image`): separate framed photos placed near each other at
      deliberately mismatched heights, rather than one flattened image. */
   .cs2-showcase__collage {
-    flex: 3 1 0;
+    /* Shrink-wraps to the photos rather than reserving a fixed 60% column:
+       the images are height-clamped, so a rigid flex basis left a dead gap
+       between a narrow photo and its caption. Sizing to content keeps the
+       text sitting right alongside it, and still wraps when the photos
+       genuinely outgrow the row. */
+    flex: 0 1 auto;
     min-width: 0;
-    width: 100%;
+    max-width: 100%;
     display: flex;
     align-items: flex-end;
     flex-wrap: wrap;
     gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+  /* ...but never past the 60% the fixed column used to hold, or a set of
+     wide reference sheets would squeeze the caption down to a sliver. */
+  @media (min-width: 60rem) {
+    .cs2-showcase__collage { max-width: 60%; }
   }
   .cs2-showcase__collage img {
     display: block;
@@ -862,8 +856,16 @@ const numReflection = hasReflection ? nextNum() : null;
     object-fit: cover;
   }
   .cs2-showcase__collage img:nth-child(1) { height: clamp(150px, 21vw, 290px); }
-  .cs2-showcase__collage img:nth-child(2) { height: clamp(120px, 16vw, 220px); align-self: center; }
+  /* Staggered off the shared bottom edge so neighbouring photos read as
+     two separate artifacts rather than one banded strip. */
+  .cs2-showcase__collage img:nth-child(2) { height: clamp(120px, 16vw, 220px); margin-bottom: clamp(1rem, 3vw, 2.5rem); }
   .cs2-showcase__collage img:nth-child(3) { height: clamp(170px, 23vw, 310px); }
+  /* A lone photo isn't sharing the row, so it can carry more of it. */
+  .cs2-showcase__collage img:only-child { height: clamp(230px, 33vw, 490px); }
+  /* A shrink-wrapped single photo otherwise hugs the band's left edge and
+     crowds its caption, so inset it and open up the row gap. */
+  .cs2-showcase__collage:has(img:only-child) { margin-inline-start: clamp(0.5rem, 4vw, 4rem); }
+  .cs2-showcase__item:has(.cs2-showcase__collage img:only-child) { gap: clamp(1.5rem, 7vw, 6rem); }
   .cs2-showcase__text { flex: 2 1 0; min-width: 0; }
   .cs2-showcase__title { font-family: var(--font-display); font-size: var(--fs-h3); color: var(--text); }
   .cs2-showcase__caption { color: var(--text-soft); line-height: 1.6; margin-top: 0.6rem; }
